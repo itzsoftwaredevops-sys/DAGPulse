@@ -38,5 +38,9 @@ waitForPort = 5000
 integrations = ["javascript_websocket:1.0.0"]
 
 [[ports]]
+localPort = 5000
+externalPort = 5000
+
+[[ports]]
 localPort = 37575
 externalPort = 80
