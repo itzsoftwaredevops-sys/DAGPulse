@@ -18,14 +18,17 @@ import {
   Award,
 } from "lucide-react";
 import type { MiningStats, Miner, Block, HashrateDataPoint } from "@shared/schema";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import logoImage from "@assets/generated_images/dagpulse_neon_gradient_logo.png";
+import { notificationStore } from "@/lib/notificationStore";
 
 export default function Home() {
   const [, setLocation] = useLocation();
   const [wsConnected, setWsConnected] = useState(false);
   const [liveStats, setLiveStats] = useState<MiningStats | null>(null);
   const [hashrateHistory, setHashrateHistory] = useState<HashrateDataPoint[]>([]);
+  const lastBlockHeightRef = useRef<number>(0);
+  const lastStatsRef = useRef<MiningStats | null>(null);
 
   const { data: initialStats } = useQuery<MiningStats>({
     queryKey: ["/api/stats"],
@@ -54,6 +57,32 @@ export default function Home() {
         const message = JSON.parse(event.data);
         if (message.type === "stats_update") {
           setLiveStats(message.data);
+
+          // Notify on new block
+          if (
+            lastStatsRef.current &&
+            message.data.blockHeight > lastStatsRef.current.blockHeight
+          ) {
+            notificationStore.addNotification(
+              "block_found",
+              "New Block Mined!",
+              `Block #${message.data.blockHeight} with ${(message.data.blockReward).toFixed(2)} BDAG reward`
+            );
+          }
+
+          // Notify on price milestone
+          if (
+            lastStatsRef.current &&
+            message.data.bdagPrice > lastStatsRef.current.bdagPrice * 1.1
+          ) {
+            notificationStore.addNotification(
+              "milestone",
+              "Price Milestone Reached!",
+              `BDAG price increased to $${message.data.bdagPrice.toFixed(4)}`
+            );
+          }
+
+          lastStatsRef.current = message.data;
         } else if (message.type === "hashrate_update") {
           setHashrateHistory((prev) => {
             const newHistory = [...prev, message.data];
