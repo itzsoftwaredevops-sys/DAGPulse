@@ -114,6 +114,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(results);
   });
 
+  app.get("/api/forecast", (req, res) => {
+    try {
+      const history = storage.getHashrateHistory(30);
+      
+      if (!history || history.length < 2) {
+        return res.status(400).json({ error: "Insufficient data for forecast" });
+      }
+
+      // Simple linear regression
+      const n = history.length;
+      const sumX = (n * (n + 1)) / 2;
+      const sumY = history.reduce((acc, p) => acc + p.hashrate, 0);
+      const sumXY = history.reduce((acc, p, i) => acc + (i + 1) * p.hashrate, 0);
+      const sumX2 = (n * (n + 1) * (2 * n + 1)) / 6;
+
+      const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+      const lastValue = history[history.length - 1].hashrate;
+      const predicted = Math.max(0, lastValue + slope * 5);
+
+      const variance = Math.abs(predicted - lastValue) / lastValue;
+      const confidence = Math.max(50, Math.min(100, 100 - variance * 100));
+      const trend = slope > 0 ? "up" : slope < 0 ? "down" : "stable";
+
+      res.json({
+        predicted,
+        confidence: Math.round(confidence),
+        trend,
+        current: lastValue,
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to generate forecast" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   const wss = new WebSocketServer({ server: httpServer, path: "/ws" });

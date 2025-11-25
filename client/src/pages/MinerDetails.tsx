@@ -16,6 +16,7 @@ import {
   Clock,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { RiskIndicator } from "@/components/RiskIndicator";
 import type { Miner, Worker } from "@shared/schema";
 
 export default function MinerDetails() {
@@ -170,6 +171,8 @@ export default function MinerDetails() {
 
           <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5" />
         </Card>
+
+        <RiskIndicator miner={miner} />
 
         <div className="mb-8 grid gap-6 md:grid-cols-2">
           <Card className="p-6">

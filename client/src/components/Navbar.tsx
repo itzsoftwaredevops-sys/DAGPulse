@@ -1,15 +1,20 @@
 import { Link, useLocation } from "wouter";
-import { Activity, Search } from "lucide-react";
+import { Activity, Search, Settings } from "lucide-react";
 import logoImage from "@assets/generated_images/dagpulse_neon_gradient_logo.png";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 export function Navbar() {
   const [location] = useLocation();
+  const [showSettings, setShowSettings] = useState(false);
 
   const navLinks = [
     { path: "/", label: "Dashboard" },
     { path: "/miners", label: "Miners" },
     { path: "/blocks", label: "Blocks" },
+    { path: "/forecast", label: "Forecast" },
+    { path: "/compare", label: "Compare" },
   ];
 
   return (
@@ -47,6 +52,15 @@ export function Navbar() {
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowSettings(!showSettings)}
+            data-testid="button-settings"
+            className="rounded-lg"
+          >
+            <Settings className="h-5 w-5" />
+          </Button>
           <button
             className="flex h-9 w-9 items-center justify-center rounded-lg hover-elevate active-elevate-2 md:hidden"
             data-testid="button-mobile-menu"

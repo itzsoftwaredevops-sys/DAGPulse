@@ -93,3 +93,27 @@ export const wsMessageSchema = z.discriminatedUnion("type", [
 ]);
 
 export type WSMessage = z.infer<typeof wsMessageSchema>;
+
+// Prediction/Forecast Data
+export const forecastSchema = z.object({
+  timestamp: z.number(),
+  predictedHashrate: z.number(),
+  confidence: z.number(), // 0-100
+  trend: z.enum(["up", "down", "stable"]),
+});
+
+export type Forecast = z.infer<typeof forecastSchema>;
+
+// Risk Assessment
+export const riskAssessmentSchema = z.object({
+  minerAddress: z.string(),
+  riskLevel: z.enum(["low", "medium", "high"]),
+  score: z.number(), // 0-100
+  factors: z.object({
+    inactivityHours: z.number(),
+    hashrateVariance: z.number(),
+    workerDowntime: z.number(),
+  }),
+});
+
+export type RiskAssessment = z.infer<typeof riskAssessmentSchema>;
