@@ -11,6 +11,8 @@ import AllMiners from "@/pages/AllMiners";
 import AllBlocks from "@/pages/AllBlocks";
 import ForecastView from "@/pages/ForecastView";
 import MinerComparison from "@/pages/MinerComparison";
+import ExportData from "@/pages/ExportData";
+import AdvancedAnalytics from "@/pages/AdvancedAnalytics";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -23,6 +25,8 @@ function Router() {
       <Route path="/blocks/:number" component={BlockLookup} />
       <Route path="/forecast" component={ForecastView} />
       <Route path="/compare" component={MinerComparison} />
+      <Route path="/analytics" component={AdvancedAnalytics} />
+      <Route path="/export" component={ExportData} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -2,6 +2,7 @@ import { Link, useLocation } from "wouter";
 import { Activity, Search, Settings } from "lucide-react";
 import logoImage from "@assets/generated_images/dagpulse_neon_gradient_logo.png";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { NotificationCenter } from "@/components/NotificationCenter";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
@@ -14,7 +15,9 @@ export function Navbar() {
     { path: "/miners", label: "Miners" },
     { path: "/blocks", label: "Blocks" },
     { path: "/forecast", label: "Forecast" },
+    { path: "/analytics", label: "Analytics" },
     { path: "/compare", label: "Compare" },
+    { path: "/export", label: "Export" },
   ];
 
   return (
@@ -52,6 +55,7 @@ export function Navbar() {
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
+          <NotificationCenter />
           <Button
             variant="ghost"
             size="icon"
