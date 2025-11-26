@@ -1,15 +1,14 @@
-import { Link, useLocation } from "wouter";
+import { Link, useLocation, useNavigate } from "wouter";
 import { Search, Settings } from "lucide-react";
 import logoImage from "@assets/generated_images/dagpulse_neon_gradient_logo.png";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { NotificationCenter } from "@/components/NotificationCenter";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
 
 export function Navbar() {
   const [location] = useLocation();
-  const [showSettings, setShowSettings] = useState(false);
+  const navigate = useNavigate();
 
   const navLinks = [
     { path: "/", label: "Dashboard" },
@@ -62,7 +61,7 @@ export function Navbar() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setShowSettings(!showSettings)}
+            onClick={() => navigate("/settings")}
             data-testid="button-settings"
             className="rounded-lg"
           >
