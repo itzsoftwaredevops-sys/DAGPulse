@@ -148,6 +148,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Mock AI Assistant Endpoint
+  app.post("/api/assistant/query", (req, res) => {
+    try {
+      const { query } = req.body;
+      if (!query || typeof query !== "string") {
+        return res.status(400).json({ error: "Query is required" });
+      }
+
+      const lowerQuery = query.toLowerCase();
+      let response = "";
+      let confidence = 0.85;
+      let factors: string[] = [];
+      let recommendations: string[] = [];
+
+      if (lowerQuery.includes("hashrate") && (lowerQuery.includes("drop") || lowerQuery.includes("decrease") || lowerQuery.includes("low"))) {
+        response = "Your hashrate has dropped significantly. This could be due to network difficulty changes, worker disconnections, or hardware thermal throttling. I recommend checking your pool connection status, monitoring GPU temperatures (should stay below 75°C), and verifying that all workers are properly connected to the mining pool.";
+        confidence = 0.92;
+        factors = ["Hashrate variance detected", "Potential network difficulty spike"];
+        recommendations = ["Check worker connection status", "Verify pool connectivity", "Monitor GPU/CPU temperature", "Reduce mining intensity if overheating"];
+      } else if (lowerQuery.includes("temp") || lowerQuery.includes("heat") || lowerQuery.includes("overheat")) {
+        response = "High temperatures detected in your system. This is critical for mining hardware stability. Immediately increase fan speed to 80%, clean dust filters, reduce GPU clock by 50MHz, and ensure proper airflow around your mining rig. Operating temperatures should stay below 75°C for optimal performance and longevity.";
+        confidence = 0.94;
+        factors = ["Thermal issue detected", "Risk of hardware damage"];
+        recommendations = ["Increase fan speed to 80%", "Clean dust filters immediately", "Reduce GPU clock by 50MHz", "Improve rig airflow"];
+      } else if (lowerQuery.includes("reward") || lowerQuery.includes("payout")) {
+        response = "Rewards in BlockDAG are distributed every ~1 hour when you meet the minimum threshold. Your pending balance must exceed 1 BDAG to trigger a payout. Check your pool dashboard for your current balance and pending rewards. Payouts are processed automatically once you meet the minimum requirement.";
+        confidence = 0.9;
+        factors = ["Reward calculation", "Payout mechanism"];
+        recommendations = ["Verify you meet minimum BDAG threshold", "Check pool dashboard for pending rewards", "Monitor wallet for incoming payouts", "Enable notifications for reward milestones"];
+      } else if (lowerQuery.includes("stale") || lowerQuery.includes("orphan") || lowerQuery.includes("invalid")) {
+        response = "Stale or orphaned shares occur when your submission arrives after the network has already found the block. This reduces your reward probability. To minimize this, switch to a geographically closer mining pool to reduce latency, lower your intensity setting by 5%, enable TCP Fast Open, and ensure your network connection is stable with latency under 50ms.";
+        confidence = 0.88;
+        factors = ["Share quality issue", "High network latency"];
+        recommendations = ["Switch to closer pool server", "Lower intensity by 5%", "Enable TCP Fast Open", "Monitor network latency (<50ms target)"];
+      } else if (lowerQuery.includes("luck")) {
+        response = "Luck represents the ratio of expected shares to actual shares found. A luck value above 100% means you're finding blocks more often than statistically expected (good luck!), while below 100% indicates temporary variance. Normal luck ranges from 80% to 120%. Use a 10+ hour average for stability, as single-day variance is expected.";
+        confidence = 0.91;
+        factors = ["Luck calculation explained"];
+        recommendations = ["Monitor luck over longer periods (10h+)", "Expect variance in short-term luck", "Compare with pool average luck", "Don't make changes based on single-day luck"];
+      } else if (lowerQuery.includes("optimize") || lowerQuery.includes("maximize")) {
+        response = "To maximize your mining rewards, run multiple workers for load balancing, carefully tune your mining intensity (start at 64 and increase by 1 until stability drops), keep temperatures under 75°C, ensure your latency to the pool is under 50ms, and enable SSL connections if available. Also monitor your luck percentage over longer periods and adjust your strategy accordingly.";
+        confidence = 0.87;
+        factors = ["Mining optimization", "Performance tuning"];
+        recommendations = ["Run multiple workers", "Optimize intensity setting", "Monitor temperature", "Check pool latency", "Enable SSL if available", "Use long-term luck averages"];
+      } else if (lowerQuery.includes("difficulty")) {
+        response = "Network difficulty adjusts to maintain consistent block times. Higher difficulty means more computational power is needed per block, which affects your reward per unit time. When difficulty increases, your mining shares require more computation. This is normal blockchain behavior and happens automatically. Your actual mining power remains constant, but you may earn slightly fewer blocks per day during difficulty increases.";
+        confidence = 0.83;
+        factors = ["Network difficulty explained"];
+        recommendations = ["Monitor difficulty trends", "Adjust expectations during difficulty increase", "Maintain consistent mining power", "Track long-term earnings patterns"];
+      } else if (lowerQuery.includes("worker") || lowerQuery.includes("pool")) {
+        response = "Workers are individual mining rigs or processes connecting to the pool. Multiple workers distribute the mining load and improve reliability. Configure each worker with your pool username and password, ensure they connect to the same mining pool endpoint, and monitor their individual hashrates. If a worker disconnects, the others continue earning rewards.";
+        confidence = 0.86;
+        factors = ["Worker configuration"];
+        recommendations = ["Verify worker credentials", "Check pool endpoint settings", "Monitor worker status", "Set up failover pools for redundancy"];
+      } else {
+        response = "I'm DAGPulse Assistant, your AI mining intelligence system. I can help you optimize hashrate, troubleshoot issues, understand luck and difficulty, maximize rewards, and tune your mining operation. Ask me about specific mining problems or optimization strategies, and I'll provide detailed guidance based on BlockDAG network parameters.";
+        confidence = 0.75;
+        factors = ["General query"];
+        recommendations = ["Check the FAQ section for common questions", "Review your miner profile for live metrics", "Monitor the dashboard for real-time stats", "Ask specific questions about mining issues"];
+      }
+
+      res.json({ message: response, confidence, factors, recommendations });
+    } catch (error) {
+      console.error("AI Query Error:", error);
+      res.status(500).json({ error: "Failed to process query" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   const wss = new WebSocketServer({ server: httpServer, path: "/ws" });
