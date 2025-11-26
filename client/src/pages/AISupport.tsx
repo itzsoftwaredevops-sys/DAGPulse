@@ -148,19 +148,40 @@ export default function AISupport() {
     setInput("");
     setLoading(true);
 
-    // Simulate AI response with rule-based diagnostics
-    setTimeout(() => {
-      const diagnostics = generateDiagnostics(input);
+    try {
+      // Call backend AI assistant endpoint
+      const res = await fetch("/api/assistant/query", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: input }),
+      });
+
+      if (!res.ok) throw new Error("Failed to get AI response");
+
+      const data = await res.json();
       const response: Message = {
         id: Math.random().toString(36).slice(2),
         role: "assistant",
-        content: `I analyzed your question about "${input.trim()}". ${diagnostics.factors.join(", ")}. Try these: ${diagnostics.recommendations.join("; ")}.`,
+        content: data.message,
         timestamp: Date.now(),
-        diagnostics,
+        diagnostics: {
+          confidence: data.confidence,
+          factors: data.factors,
+          recommendations: data.recommendations,
+        },
       };
       setMessages((prev) => [...prev, response]);
+    } catch (error) {
+      const response: Message = {
+        id: Math.random().toString(36).slice(2),
+        role: "assistant",
+        content: "I encountered an error processing your query. Please try again.",
+        timestamp: Date.now(),
+      };
+      setMessages((prev) => [...prev, response]);
+    } finally {
       setLoading(false);
-    }, 800);
+    }
   };
 
   return (
