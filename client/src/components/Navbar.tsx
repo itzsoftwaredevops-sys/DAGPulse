@@ -1,8 +1,9 @@
 import { Link, useLocation } from "wouter";
-import { Activity, Search, Settings } from "lucide-react";
+import { Search, Settings } from "lucide-react";
 import logoImage from "@assets/generated_images/dagpulse_neon_gradient_logo.png";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { NotificationCenter } from "@/components/NotificationCenter";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
@@ -22,7 +23,9 @@ export function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 h-16 border-b border-border/50 bg-background/80 backdrop-blur-xl">
-      <div className="mx-auto flex h-full max-w-7xl items-center justify-between gap-4 px-4 md:px-6">
+      <div className="mx-auto flex h-full w-full items-center justify-between gap-4 px-4 md:px-6">
+        <SidebarTrigger data-testid="button-sidebar-toggle" className="rounded-lg" />
+        
         <Link href="/" data-testid="link-home">
           <div className="flex items-center gap-3 hover-elevate active-elevate-2 rounded-lg px-2 py-1 transition-transform hover:scale-105">
             <img src={logoImage} alt="DAGPulse" className="h-8 w-8" />
@@ -65,12 +68,6 @@ export function Navbar() {
           >
             <Settings className="h-5 w-5" />
           </Button>
-          <button
-            className="flex h-9 w-9 items-center justify-center rounded-lg hover-elevate active-elevate-2 md:hidden"
-            data-testid="button-mobile-menu"
-          >
-            <Activity className="h-5 w-5" />
-          </button>
           <div className="hidden h-9 items-center gap-2 rounded-lg border border-border/50 bg-card/50 px-3 backdrop-blur-sm md:flex">
             <Search className="h-4 w-4 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">Search...</span>
