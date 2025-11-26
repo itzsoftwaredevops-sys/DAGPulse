@@ -55,7 +55,7 @@ function App() {
           <SidebarProvider style={style as React.CSSProperties}>
             <div className="flex h-screen w-full">
               <AppSidebar />
-              <div className="flex flex-col flex-1 overflow-hidden">
+              <div className="flex flex-col flex-1 overflow-y-auto">
                 <Router />
               </div>
             </div>
