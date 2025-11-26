@@ -1,51 +1,13 @@
-import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Search, Settings, HelpCircle, ChevronDown } from "lucide-react";
+import { Search, Settings } from "lucide-react";
 import logoImage from "@assets/generated_images/dagpulse_neon_gradient_logo.png";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { NotificationCenter } from "@/components/NotificationCenter";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-const FAQItems = [
-  {
-    question: "Why did my hashrate drop?",
-    answer:
-      "Check network difficulty, worker connections, hardware temperature, or intensity settings. Verify pool connection and reduce intensity by 10% if needed.",
-  },
-  {
-    question: "What does 'Luck' mean?",
-    answer:
-      "Luck is expected vs actual shares found. >100% means you found more blocks than expected. <100% is normal variance. Use 10h+ averages for stability.",
-  },
-  {
-    question: "How to maximize rewards?",
-    answer:
-      "Run multiple workers, optimize intensity (start at 64), keep temps <75°C, check pool latency <50ms, and enable SSL if available.",
-  },
-  {
-    question: "What causes stale shares?",
-    answer:
-      "Submission arrives after network found block. Minimize by reducing latency, using closer pool server, and lowering intensity by 5%.",
-  },
-  {
-    question: "How often are payouts?",
-    answer:
-      "BlockDAG pays every ~1 hour. Must exceed pool minimum (usually 1 BDAG). Check pool dashboard for pending rewards.",
-  },
-];
 
 export function Navbar() {
   const [location] = useLocation();
-  const [faqOpen, setFaqOpen] = useState(false);
 
   const navLinks = [
     { path: "/", label: "Dashboard" },
@@ -95,37 +57,6 @@ export function Navbar() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <NotificationCenter />
-          
-          {/* FAQ Dropdown */}
-          <DropdownMenu open={faqOpen} onOpenChange={setFaqOpen}>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                data-testid="button-faq"
-                className="rounded-lg"
-              >
-                <HelpCircle className="h-5 w-5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-72">
-              <DropdownMenuLabel>Frequently Asked Questions</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {FAQItems.map((item, idx) => (
-                <DropdownMenuItem key={idx} className="flex-col items-start py-3" data-testid={`faq-item-${idx}`}>
-                  <p className="font-medium text-sm">{item.question}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{item.answer}</p>
-                </DropdownMenuItem>
-              ))}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/ai-support" className="text-primary">
-                  <p className="text-sm font-medium">View Full AI Support Page →</p>
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
           <Link href="/settings">
             <Button
               variant="ghost"
