@@ -17,6 +17,7 @@ import ExportData from "@/pages/ExportData";
 import AdvancedAnalytics from "@/pages/AdvancedAnalytics";
 import AISupport from "@/pages/AISupport";
 import Leaderboard from "@/pages/Leaderboard";
+import Guilds from "@/pages/Guilds";
 import Settings from "@/pages/Settings";
 import NotFound from "@/pages/not-found";
 
@@ -34,6 +35,7 @@ function Router() {
       <Route path="/export" component={ExportData} />
       <Route path="/ai-support" component={AISupport} />
       <Route path="/leaderboard" component={Leaderboard} />
+      <Route path="/guilds" component={Guilds} />
       <Route path="/settings" component={Settings} />
       <Route component={NotFound} />
     </Switch>

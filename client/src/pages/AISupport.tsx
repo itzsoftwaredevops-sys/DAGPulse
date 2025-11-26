@@ -66,7 +66,7 @@ export default function AISupport() {
   }, [messages]);
 
   // Rule-based AI diagnostics
-  const generateDiagnostics = (query: string): Message["diagnostics"] => {
+  const generateDiagnostics = (query: string): NonNullable<Message["diagnostics"]> => {
     const lowerQuery = query.toLowerCase();
     let factors: string[] = [];
     let recommendations: string[] = [];

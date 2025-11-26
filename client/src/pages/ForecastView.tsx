@@ -1,11 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { LoadingSkeleton } from "@/components/LoadingSkeleton";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { TrendingUp, BarChart3, Activity } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import type { MiningStats, HashrateDataPoint } from "@shared/schema";
 
 export default function ForecastView() {
+  const [timeframe, setTimeframe] = useState<"1h" | "24h" | "7d">("24h");
+  
   const { data: stats } = useQuery<MiningStats>({
     queryKey: ["/api/stats"],
   });
@@ -65,35 +70,64 @@ export default function ForecastView() {
             <p className="text-muted-foreground">Predictive analytics for mining performance</p>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-3">
-            <div className="rounded-lg border border-border/50 bg-card/50 p-6 backdrop-blur-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Current Hashrate</p>
-                  <p className="text-2xl font-bold">{stats?.poolHashrate.toFixed(2) || "—"} MH/s</p>
-                </div>
-                <Activity className="h-8 w-8 text-muted-foreground/50" />
-              </div>
+          <div className="flex flex-col gap-6">
+            <div className="flex gap-2 flex-wrap">
+              <Button 
+                variant={timeframe === "1h" ? "default" : "outline"}
+                onClick={() => setTimeframe("1h")}
+                size="sm"
+                data-testid="button-forecast-1h"
+              >
+                1 Hour
+              </Button>
+              <Button 
+                variant={timeframe === "24h" ? "default" : "outline"}
+                onClick={() => setTimeframe("24h")}
+                size="sm"
+                data-testid="button-forecast-24h"
+              >
+                24 Hours
+              </Button>
+              <Button 
+                variant={timeframe === "7d" ? "default" : "outline"}
+                onClick={() => setTimeframe("7d")}
+                size="sm"
+                data-testid="button-forecast-7d"
+              >
+                7 Days
+              </Button>
             </div>
 
-            <div className="rounded-lg border border-border/50 bg-card/50 p-6 backdrop-blur-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Predicted Trend</p>
-                  <p className="text-2xl font-bold capitalize">{trend}</p>
+            <div className="grid gap-6 md:grid-cols-3">
+              <Card className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Current Hashrate</p>
+                    <p className="font-['Space_Grotesk'] text-2xl font-bold">{(stats?.poolHashrate ? stats.poolHashrate / 1e6 : 0).toFixed(2)} MH/s</p>
+                  </div>
+                  <Activity className="h-8 w-8 text-muted-foreground/50" />
                 </div>
-                <TrendingUp className="h-8 w-8 text-muted-foreground/50" />
-              </div>
-            </div>
+              </Card>
 
-            <div className="rounded-lg border border-border/50 bg-card/50 p-6 backdrop-blur-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Forecast Confidence</p>
-                  <p className="text-2xl font-bold">78%</p>
+              <Card className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Predicted Trend</p>
+                    <p className="font-['Space_Grotesk'] text-2xl font-bold capitalize" data-testid="text-forecast-trend">{trend}</p>
+                  </div>
+                  <TrendingUp className="h-8 w-8 text-muted-foreground/50" />
                 </div>
-                <BarChart3 className="h-8 w-8 text-muted-foreground/50" />
-              </div>
+              </Card>
+
+              <Card className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Forecast Confidence</p>
+                    <p className="font-['Space_Grotesk'] text-2xl font-bold">78%</p>
+                  </div>
+                  <BarChart3 className="h-8 w-8 text-muted-foreground/50" />
+                </div>
+              </Card>
             </div>
           </div>
 

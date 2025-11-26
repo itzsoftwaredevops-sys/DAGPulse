@@ -66,6 +66,12 @@ const menuItems = [
     description: "Top miners & guilds",
   },
   {
+    title: "Guilds",
+    icon: Users,
+    path: "/guilds",
+    description: "Teams & collaboration",
+  },
+  {
     title: "Tools",
     icon: Wrench,
     path: "/export",
