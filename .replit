@@ -35,11 +35,15 @@ args = "npm run dev"
 waitForPort = 5000
 
 [agent]
-integrations = ["javascript_websocket:1.0.0"]
+integrations = ["javascript_websocket:1.0.0", "javascript_openai:1.0.0"]
 
 [[ports]]
 localPort = 5000
 externalPort = 5000
+
+[[ports]]
+localPort = 32771
+externalPort = 3002
 
 [[ports]]
 localPort = 37575

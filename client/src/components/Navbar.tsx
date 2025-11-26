@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Search, Settings } from "lucide-react";
 import logoImage from "@assets/generated_images/dagpulse_neon_gradient_logo.png";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 
 export function Navbar() {
   const [location] = useLocation();
-  const navigate = useNavigate();
 
   const navLinks = [
     { path: "/", label: "Dashboard" },
@@ -58,15 +57,16 @@ export function Navbar() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <NotificationCenter />
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate("/settings")}
-            data-testid="button-settings"
-            className="rounded-lg"
-          >
-            <Settings className="h-5 w-5" />
-          </Button>
+          <Link href="/settings">
+            <Button
+              variant="ghost"
+              size="icon"
+              data-testid="button-settings"
+              className="rounded-lg"
+            >
+              <Settings className="h-5 w-5" />
+            </Button>
+          </Link>
           <div className="hidden h-9 items-center gap-2 rounded-lg border border-border/50 bg-card/50 px-3 backdrop-blur-sm md:flex">
             <Search className="h-4 w-4 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">Search...</span>
