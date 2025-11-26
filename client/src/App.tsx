@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { AIWidget } from "@/components/AIWidget";
 import Home from "@/pages/Home";
 import MinerDetails from "@/pages/MinerDetails";
 import BlockLookup from "@/pages/BlockLookup";
@@ -59,6 +60,7 @@ function App() {
                 <Router />
               </div>
             </div>
+            <AIWidget />
           </SidebarProvider>
           <Toaster />
         </TooltipProvider>
