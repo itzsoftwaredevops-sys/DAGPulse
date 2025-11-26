@@ -148,7 +148,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Mock AI Assistant Endpoint
+  // Mock AI Assistant Endpoint - Enhanced with DAGPulse Knowledge
   app.post("/api/assistant/query", (req, res) => {
     try {
       const { query } = req.body;
@@ -162,6 +162,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let factors: string[] = [];
       let recommendations: string[] = [];
 
+      // MINING-SPECIFIC QUESTIONS
       if (lowerQuery.includes("hashrate") && (lowerQuery.includes("drop") || lowerQuery.includes("decrease") || lowerQuery.includes("low"))) {
         response = "Your hashrate has dropped significantly. This could be due to network difficulty changes, worker disconnections, or hardware thermal throttling. I recommend checking your pool connection status, monitoring GPU temperatures (should stay below 75°C), and verifying that all workers are properly connected to the mining pool.";
         confidence = 0.92;
@@ -202,11 +203,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
         confidence = 0.86;
         factors = ["Worker configuration"];
         recommendations = ["Verify worker credentials", "Check pool endpoint settings", "Monitor worker status", "Set up failover pools for redundancy"];
+
+      // DAGPULSE FEATURE QUESTIONS
+      } else if (lowerQuery.includes("dashboard") || lowerQuery.includes("home")) {
+        response = "The Dashboard (Home page) is your main hub for real-time mining intelligence. It displays live network statistics including current luck, miners online, pool hashrate, network hashrate, block difficulty, and BDAG price. You'll see live hashrate charts with trend analysis, recent blocks discovered, and top miners leaderboard. This is where you monitor overall network health and performance at a glance.";
+        confidence = 0.88;
+        factors = ["Dashboard overview"];
+        recommendations = ["Check live network stats", "Monitor real-time hashrate charts", "View recent blocks", "Track top miners"];
+      } else if (lowerQuery.includes("miners") && !lowerQuery.includes("optimize")) {
+        response = "The Miners section shows all active miners on the BlockDAG network. You can browse all miners or click on any miner address to see detailed statistics including their hashrate, workers, total blocks found, current luck, rewards earned, and mining duration. Use the search feature to quickly find specific miner addresses and track their performance metrics over time.";
+        confidence = 0.9;
+        factors = ["Miners page features"];
+        recommendations = ["Search for miner addresses", "View miner details and stats", "Compare miner performance", "Track blocks found by miners"];
+      } else if (lowerQuery.includes("block")) {
+        response = "The Blocks section displays all discovered blocks on the network with detailed information like block number, hash, difficulty, reward, miner who found it, confirmation status, and timestamp. You can look up specific blocks by number to see who mined them and view transaction details. This helps you track block discoveries across the network and validate mining activity.";
+        confidence = 0.87;
+        factors = ["Blocks page features"];
+        recommendations = ["Search blocks by number", "View block details", "See miner rewards", "Check block confirmations"];
+      } else if (lowerQuery.includes("forecast") || lowerQuery.includes("prediction")) {
+        response = "The Forecast page uses linear regression analysis to predict future hashrate trends. You can view predictions for 1-hour, 24-hour, and 7-day timeframes. Each forecast shows the predicted hashrate, confidence level (how reliable the prediction is), and the trend direction (up, down, or stable). Use this to anticipate network changes and adjust your mining strategy accordingly.";
+        confidence = 0.89;
+        factors = ["Forecast functionality"];
+        recommendations = ["Select different timeframes (1h, 24h, 7d)", "Check confidence levels", "Monitor trend directions", "Plan mining adjustments based on forecasts"];
+      } else if (lowerQuery.includes("analytics") || lowerQuery.includes("compare")) {
+        response = "The Analytics section provides advanced insights and comparison tools. You can compare hashrate performance between different miners, analyze trends over time with interactive charts, and generate detailed reports. Use this to benchmark your performance against other miners and identify optimization opportunities for your mining operation.";
+        confidence = 0.86;
+        factors = ["Analytics features"];
+        recommendations = ["Compare miners side-by-side", "Analyze historical trends", "Generate reports", "Identify performance gaps"];
+      } else if (lowerQuery.includes("export") || lowerQuery.includes("download")) {
+        response = "The Export Data page allows you to download mining data in CSV or JSON format. You can export miner statistics, block history, hashrate data, and detailed reports. This is useful for maintaining records, analyzing data in external tools, or generating custom reports for your mining operation.";
+        confidence = 0.88;
+        factors = ["Export functionality"];
+        recommendations = ["Choose CSV or JSON format", "Select data types to export", "Save reports locally", "Import into analysis tools"];
+      } else if (lowerQuery.includes("leaderboard") || lowerQuery.includes("rank")) {
+        response = "The Leaderboard shows competitive rankings of miners on the network. Miners are ranked by total blocks found, current hashrate, rewards earned, and overall mining performance. This gives you a competitive view of the network and shows where your mining operation stands compared to other miners. Use it for benchmarking and motivation.";
+        confidence = 0.87;
+        factors = ["Leaderboard rankings"];
+        recommendations = ["Check your rank", "Compare with top miners", "Track ranking changes", "Set performance goals"];
+      } else if (lowerQuery.includes("guild") || lowerQuery.includes("team")) {
+        response = "The Guilds page enables team mining collaboration. You can form mining guilds (teams) to pool resources, share mining strategies, and collaborate on optimization. Guilds can track combined hashrate, shared rewards, and member contributions. This is perfect for coordinating large mining operations or learning from other miners.";
+        confidence = 0.85;
+        factors = ["Guilds/teams feature"];
+        recommendations = ["Create or join a guild", "Collaborate with other miners", "Share optimization tips", "Track team performance"];
+      } else if (lowerQuery.includes("ai") || lowerQuery.includes("support") || lowerQuery.includes("help")) {
+        response = "I'm the DAGPulse AI Support Agent, available 24/7 to help you optimize your mining operation. I can answer questions about mining strategy, network mechanics, BlockDAG technology, hardware optimization, troubleshooting issues, and how to use DAGPulse features. Ask me anything about mining, and I'll provide expert guidance based on real network data.";
+        confidence = 0.9;
+        factors = ["AI assistant capabilities"];
+        recommendations = ["Ask mining questions", "Get troubleshooting help", "Learn optimization strategies", "Understand network mechanics"];
+      } else if (lowerQuery.includes("settings") || lowerQuery.includes("wallet") || lowerQuery.includes("configure")) {
+        response = "The Settings page lets you configure your DAGPulse experience. You can connect your MetaMask wallet to track your mining earnings directly in the dashboard, customize notification preferences (hashrate drop alerts, new block notifications, reward milestones), enable/disable features, and manage your account preferences. Your settings are saved in your browser for persistent configuration.";
+        confidence = 0.88;
+        factors = ["Settings and wallet"];
+        recommendations = ["Connect MetaMask wallet", "Configure notifications", "Customize preferences", "Review account settings"];
+      } else if (lowerQuery.includes("notification") || lowerQuery.includes("alert")) {
+        response = "DAGPulse offers customizable notifications to keep you updated on important events. You can enable alerts for hashrate drops (when your hashrate drops more than 30%), new block discoveries, and reward milestones. Notifications are shown in real-time in the notification center (bell icon in the top right). You can configure which alerts matter most to you in Settings.";
+        confidence = 0.87;
+        factors = ["Notification system"];
+        recommendations = ["Enable relevant alerts", "Check notification center", "Set alert thresholds", "Adjust in settings"];
+
+      // GENERAL HELP AND NAVIGATION
+      } else if (lowerQuery.includes("how") || lowerQuery.includes("what") || lowerQuery.includes("where")) {
+        response = "I'm DAGPulse Assistant, your comprehensive mining intelligence system. I can help you with: (1) Mining optimization and troubleshooting, (2) Understanding BlockDAG network mechanics, (3) Navigating DAGPulse features and pages, (4) Wallet connection and settings, (5) Data analysis and forecasting. Tell me what you need help with, and I'll provide specific guidance!";
+        confidence = 0.8;
+        factors = ["General help request"];
+        recommendations = ["Ask about specific features", "Describe your mining challenge", "Request network insights", "Ask for navigation help"];
+
+      // DEFAULT FALLBACK
       } else {
-        response = "I'm DAGPulse Assistant, your AI mining intelligence system. I can help you optimize hashrate, troubleshoot issues, understand luck and difficulty, maximize rewards, and tune your mining operation. Ask me about specific mining problems or optimization strategies, and I'll provide detailed guidance based on BlockDAG network parameters.";
+        response = "I'm DAGPulse Assistant, your AI mining intelligence system built for the BlockDAG network. I can help you with: mining optimization, hardware troubleshooting, network analysis, understanding luck and difficulty, maximizing rewards, wallet connection, exploring DAGPulse features (Dashboard, Miners, Blocks, Forecast, Analytics, Export, Leaderboard, Guilds), and answering questions about our platform. What can I help you with today?";
         confidence = 0.75;
         factors = ["General query"];
-        recommendations = ["Check the FAQ section for common questions", "Review your miner profile for live metrics", "Monitor the dashboard for real-time stats", "Ask specific questions about mining issues"];
+        recommendations = ["Ask about mining issues", "Learn about platform features", "Get optimization tips", "Request technical guidance"];
       }
 
       res.json({ message: response, confidence, factors, recommendations });
