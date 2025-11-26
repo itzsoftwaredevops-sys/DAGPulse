@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -5,9 +6,72 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { AlertCircle, Wallet, Bell, Eye, Lock } from "lucide-react";
+import { AlertCircle, Wallet, Bell, Eye, Lock, Check } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Settings() {
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    // Check if wallet was previously connected
+    const savedAddress = localStorage.getItem("walletAddress");
+    if (savedAddress) {
+      setWalletAddress(savedAddress);
+    }
+  }, []);
+
+  const handleConnectWallet = async () => {
+    setIsConnecting(true);
+    try {
+      // Check if MetaMask is installed
+      if (typeof window.ethereum === "undefined") {
+        toast({
+          title: "MetaMask Not Found",
+          description: "Please install MetaMask to connect your wallet.",
+          variant: "destructive",
+        });
+        setIsConnecting(false);
+        return;
+      }
+
+      // Request wallet connection
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+
+      if (accounts && accounts.length > 0) {
+        const address = accounts[0];
+        setWalletAddress(address);
+        localStorage.setItem("walletAddress", address);
+        toast({
+          title: "Wallet Connected",
+          description: `Connected: ${address.slice(0, 6)}...${address.slice(-4)}`,
+        });
+      }
+    } catch (error: any) {
+      if (error.code !== -32602) {
+        toast({
+          title: "Connection Failed",
+          description: error.message || "Failed to connect wallet",
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
+  const handleDisconnectWallet = () => {
+    setWalletAddress(null);
+    localStorage.removeItem("walletAddress");
+    toast({
+      title: "Wallet Disconnected",
+      description: "Your wallet has been disconnected.",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -29,16 +93,49 @@ export default function Settings() {
                   <p className="text-sm text-muted-foreground">Connect your BlockDAG wallet</p>
                 </div>
               </div>
-              <Badge variant="outline">Not Connected</Badge>
+              {walletAddress ? (
+                <Badge variant="default" className="gap-2">
+                  <Check className="h-3 w-3" />
+                  Connected
+                </Badge>
+              ) : (
+                <Badge variant="outline">Not Connected</Badge>
+              )}
             </div>
-            <Button className="w-full" data-testid="button-connect-wallet">
-              Connect MetaMask / Web3
-            </Button>
-            <p className="text-xs text-muted-foreground">
-              <AlertCircle className="inline h-3 w-3 mr-1" />
-              Live wallet connection coming in v2. For now, enter your miner address above to track
-              stats.
-            </p>
+
+            {walletAddress ? (
+              <div className="space-y-4">
+                <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
+                  <p className="text-sm text-muted-foreground mb-2">Connected Address</p>
+                  <p className="font-mono text-sm break-all">{walletAddress}</p>
+                </div>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleDisconnectWallet}
+                  data-testid="button-disconnect-wallet"
+                >
+                  Disconnect Wallet
+                </Button>
+              </div>
+            ) : (
+              <Button
+                className="w-full"
+                onClick={handleConnectWallet}
+                disabled={isConnecting}
+                data-testid="button-connect-wallet"
+              >
+                {isConnecting ? "Connecting..." : "Connect MetaMask / Web3"}
+              </Button>
+            )}
+
+            <div className="p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+              <p className="text-xs text-muted-foreground">
+                <AlertCircle className="inline h-3 w-3 mr-2" />
+                MetaMask required for wallet connection. Make sure you have MetaMask extension
+                installed.
+              </p>
+            </div>
           </Card>
 
           {/* Notifications */}
