@@ -4,6 +4,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
 import Home from "@/pages/Home";
 import MinerDetails from "@/pages/MinerDetails";
 import BlockLookup from "@/pages/BlockLookup";
@@ -13,6 +15,9 @@ import ForecastView from "@/pages/ForecastView";
 import MinerComparison from "@/pages/MinerComparison";
 import ExportData from "@/pages/ExportData";
 import AdvancedAnalytics from "@/pages/AdvancedAnalytics";
+import AISupport from "@/pages/AISupport";
+import Leaderboard from "@/pages/Leaderboard";
+import Settings from "@/pages/Settings";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -27,18 +32,33 @@ function Router() {
       <Route path="/compare" component={MinerComparison} />
       <Route path="/analytics" component={AdvancedAnalytics} />
       <Route path="/export" component={ExportData} />
+      <Route path="/ai-support" component={AISupport} />
+      <Route path="/leaderboard" component={Leaderboard} />
+      <Route path="/settings" component={Settings} />
       <Route component={NotFound} />
     </Switch>
   );
 }
 
 function App() {
+  const style = {
+    "--sidebar-width": "16rem",
+    "--sidebar-width-icon": "3rem",
+  };
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="dark">
         <TooltipProvider>
+          <SidebarProvider style={style as React.CSSProperties}>
+            <div className="flex h-screen w-full">
+              <AppSidebar />
+              <div className="flex flex-col flex-1 overflow-hidden">
+                <Router />
+              </div>
+            </div>
+          </SidebarProvider>
           <Toaster />
-          <Router />
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>
