@@ -181,11 +181,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json({
         address: miner.address,
-        hashrate: miner.hashrate,
-        blocksFound: miner.blocksFound,
-        rewardsEarned: miner.rewardsEarned,
+        currentHashrate: miner.currentHashrate,
+        totalBlocks: miner.totalBlocks,
+        totalRewards: miner.totalRewards,
         currentLuck: miner.currentLuck,
-        lastSeen: miner.lastSeen,
+        lastActive: miner.lastActive,
         isContractVerified: true
       });
     } catch (error) {
