@@ -16,6 +16,7 @@ import MinerComparison from "@/pages/MinerComparison";
 import ExportData from "@/pages/ExportData";
 import AdvancedAnalytics from "@/pages/AdvancedAnalytics";
 import AISupport from "@/pages/AISupport";
+import AIChat from "@/pages/AIChat";
 import Leaderboard from "@/pages/Leaderboard";
 import Guilds from "@/pages/Guilds";
 import Settings from "@/pages/Settings";
@@ -34,6 +35,7 @@ function Router() {
       <Route path="/analytics" component={AdvancedAnalytics} />
       <Route path="/export" component={ExportData} />
       <Route path="/ai-support" component={AISupport} />
+      <Route path="/ai-chat" component={AIChat} />
       <Route path="/leaderboard" component={Leaderboard} />
       <Route path="/guilds" component={Guilds} />
       <Route path="/settings" component={Settings} />
