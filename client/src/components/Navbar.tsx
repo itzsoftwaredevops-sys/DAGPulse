@@ -17,6 +17,7 @@ export function Navbar() {
     { path: "/analytics", label: "Analytics" },
     { path: "/compare", label: "Compare" },
     { path: "/export", label: "Export" },
+    { path: "/ai-chat", label: "AI Chat" },
   ];
 
   return (
