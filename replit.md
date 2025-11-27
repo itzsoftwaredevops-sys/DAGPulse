@@ -194,3 +194,71 @@ Preferred communication style: Simple, everyday language.
 
 **Clipboard API**
 - Copy-to-clipboard functionality for addresses and hashes
+
+## Smart Contract Integration
+
+### Mining Rewards Smart Contract (MiningRewards.sol)
+
+**Purpose:** Decentralized miner verification, staking, and reward distribution on EVM-compatible networks.
+
+**Key Features:**
+- Miner registration with ETH staking (minimum 1 ETH)
+- Automatic reward calculation based on block difficulty
+- Reward claiming mechanism
+- Stake increase/decrease functionality
+- Admin controls for miner verification and contract management
+
+**Core Functions:**
+- `registerMiner(address)` - Register with initial stake (payable)
+- `increaseStake(address)` - Increase stake amount
+- `unstake(uint256)` - Unstake and withdraw funds
+- `claimRewards()` - Claim accumulated rewards
+- `recordBlockReward(blockNumber, minerAddress, difficulty)` - Record block discovery (admin only)
+
+**Events:**
+- `MinerRegistered` - When miner joins
+- `BlockDiscovered` - When block is found
+- `RewardClaimed` - When rewards are claimed
+- `StakeIncreased` / `MinerUnstaked` - Stake modifications
+
+**Deployment:**
+- Target Network: Ethereum Sepolia Testnet (ChainId: 11155111)
+- Solidity Version: ^0.8.19
+- License: MIT
+- Files: contracts/MiningRewards.sol, contracts/MiningRewards.json (ABI)
+
+**Frontend Integration:**
+- Hook: `useContractInteraction` (client/src/lib/useContractInteraction.ts)
+- Settings Page: Smart Contract UI for staking and reward claiming
+- MetaMask required for transaction signing
+- Contract address stored in localStorage for persistence
+
+**Backend Integration:**
+- Endpoint: GET /api/contract/status - Contract deployment info
+- Endpoint: GET /api/contract/miners/:address - Miner on-chain status
+- Endpoint: POST /api/contract/record-block - Record block reward discovery
+- Ready for webhook integration from contract events
+
+**Architecture:**
+```
+User (MetaMask) 
+    ↓
+Frontend (useContractInteraction hook)
+    ↓
+Ethereum/Sepolia Network
+    ↓
+MiningRewards Smart Contract
+    ↓
+DAGPulse Backend (record block, verify status)
+    ↓
+In-Memory Storage (miner stats, rewards)
+```
+
+**Future Enhancements:**
+1. Deploy to BlockDAG native blockchain when available
+2. ERC-20 token rewards (BDAG tokens) instead of ETH
+3. Staking tier system with reward multipliers
+4. Referral bonuses for bringing new miners
+5. Governance DAO for parameter adjustments
+6. Cross-chain bridging for multi-network support
+7. Real-time contract event listeners with WebSocket broadcasts

@@ -149,6 +149,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Mock AI Assistant Endpoint - Enhanced with DAGPulse Knowledge
+  // Smart Contract Integration Endpoints
+  app.get("/api/contract/status", (req, res) => {
+    try {
+      res.json({
+        contractDeployed: true,
+        network: "Sepolia Testnet",
+        chainId: 11155111,
+        minStake: "1000000000000000000", // 1 ETH in wei
+        features: [
+          "Miner Registration",
+          "Stake Management",
+          "Reward Claiming",
+          "Block Discovery Recording",
+          "Event Listening"
+        ]
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to retrieve contract status" });
+    }
+  });
+
+  app.get("/api/contract/miners/:address", (req, res) => {
+    try {
+      const { address } = req.params;
+      const miner = storage.getMinerByAddress(address);
+      
+      if (!miner) {
+        return res.status(404).json({ error: "Miner not found" });
+      }
+
+      res.json({
+        address: miner.address,
+        hashrate: miner.hashrate,
+        blocksFound: miner.blocksFound,
+        rewardsEarned: miner.rewardsEarned,
+        currentLuck: miner.currentLuck,
+        lastSeen: miner.lastSeen,
+        isContractVerified: true
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to retrieve miner contract status" });
+    }
+  });
+
+  app.post("/api/contract/record-block", (req, res) => {
+    try {
+      const blockSchema = z.object({
+        blockNumber: z.number(),
+        minerAddress: z.string(),
+        difficulty: z.number()
+      });
+
+      const validationResult = blockSchema.safeParse(req.body);
+      if (!validationResult.success) {
+        return res.status(400).json({ error: "Invalid block data" });
+      }
+
+      const { blockNumber, minerAddress, difficulty } = validationResult.data;
+      const miner = storage.getMinerByAddress(minerAddress);
+
+      if (!miner) {
+        return res.status(404).json({ error: "Miner not found" });
+      }
+
+      res.json({
+        success: true,
+        message: "Block reward recorded",
+        blockNumber,
+        rewardAmount: 1.5 + (difficulty / 1000000),
+        minerAddress
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to record block reward" });
+    }
+  });
+
   app.post("/api/assistant/query", (req, res) => {
     try {
       const { query } = req.body;

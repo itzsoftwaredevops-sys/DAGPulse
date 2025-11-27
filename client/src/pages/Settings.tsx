@@ -6,13 +6,23 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { AlertCircle, Wallet, Bell, Eye, Lock, Check } from "lucide-react";
+import { AlertCircle, Wallet, Bell, Eye, Lock, Check, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useContractInteraction } from "@/lib/useContractInteraction";
 
 export default function Settings() {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [stakeAmount, setStakeAmount] = useState("1");
+  const [contractAddress, setContractAddress] = useState(localStorage.getItem("contractAddress") || "");
   const { toast } = useToast();
+  
+  const CONTRACT_CONFIG = {
+    address: contractAddress || "0x0000000000000000000000000000000000000000",
+    chainId: 11155111, // Sepolia testnet
+  };
+  
+  const { loading: contractLoading, registerMiner, claimRewards, unstake } = useContractInteraction(CONTRACT_CONFIG);
 
   useEffect(() => {
     // Check if wallet was previously connected
@@ -137,6 +147,99 @@ export default function Settings() {
               </p>
             </div>
           </Card>
+
+          {/* Smart Contract Integration */}
+          {walletAddress && (
+            <Card className="p-6 space-y-6 border-primary/20 bg-primary/5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <Zap className="h-6 w-6 text-primary" />
+                  <div>
+                    <h2 className="font-semibold">Smart Contract - Mining Rewards</h2>
+                    <p className="text-sm text-muted-foreground">Stake ETH to earn block rewards</p>
+                  </div>
+                </div>
+                <Badge variant="outline" className="gap-2">
+                  <Check className="h-3 w-3" />
+                  Active
+                </Badge>
+              </div>
+
+              <div className="space-y-4 border-t border-primary/20 pt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="contract-address">Contract Address (Sepolia)</Label>
+                  <Input
+                    id="contract-address"
+                    placeholder="0x..."
+                    value={contractAddress}
+                    onChange={(e) => {
+                      setContractAddress(e.target.value);
+                      localStorage.setItem("contractAddress", e.target.value);
+                    }}
+                    className="font-mono text-sm"
+                    data-testid="input-contract-address"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Deploy MiningRewards.sol to Sepolia and paste the contract address here
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="stake-amount">Stake Amount (ETH)</Label>
+                    <Input
+                      id="stake-amount"
+                      type="number"
+                      min="0.1"
+                      step="0.1"
+                      value={stakeAmount}
+                      onChange={(e) => setStakeAmount(e.target.value)}
+                      placeholder="1.0"
+                      data-testid="input-stake-amount"
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <Button
+                      className="w-full"
+                      onClick={() => registerMiner(stakeAmount)}
+                      disabled={contractLoading || !contractAddress}
+                      data-testid="button-register-miner"
+                    >
+                      {contractLoading ? "Processing..." : "Register Miner"}
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 pt-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => claimRewards()}
+                    disabled={contractLoading || !contractAddress}
+                    data-testid="button-claim-rewards"
+                  >
+                    Claim Rewards
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => unstake(stakeAmount)}
+                    disabled={contractLoading || !contractAddress}
+                    data-testid="button-unstake"
+                  >
+                    Unstake
+                  </Button>
+                </div>
+
+                <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 text-xs">
+                  <p className="text-muted-foreground">
+                    <AlertCircle className="inline h-3 w-3 mr-2" />
+                    Minimum stake: 1 ETH. Rewards calculated based on block difficulty. Use Sepolia testnet for testing.
+                  </p>
+                </div>
+              </div>
+            </Card>
+          )}
 
           {/* Notifications */}
           <Card className="p-6 space-y-4">
