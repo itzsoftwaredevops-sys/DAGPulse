@@ -16,6 +16,8 @@ import {
   DollarSign,
   Users,
   Award,
+  Code,
+  Clock,
 } from "lucide-react";
 import type { MiningStats, Miner, Block, HashrateDataPoint } from "@shared/schema";
 import { useEffect, useState, useRef } from "react";
@@ -159,6 +161,7 @@ export default function Home() {
                 label="Block Height"
                 value={stats.blockHeight}
                 icon={Layers}
+                data-testid="stat-block-height"
               />
               <StatBox
                 label="BDAG Price"
@@ -175,17 +178,32 @@ export default function Home() {
                 decimals={2}
               />
               <StatBox
+                label="Network Difficulty"
+                value={stats.blockDifficulty >= 1e6 ? (stats.blockDifficulty / 1e6).toFixed(2) : (stats.blockDifficulty / 1e3).toFixed(2)}
+                unit={stats.blockDifficulty >= 1e6 ? "M" : "K"}
+                icon={TrendingUp}
+                decimals={2}
+                data-testid="stat-network-difficulty"
+              />
+              <StatBox
+                label="Algorithm"
+                value={stats.algorithm}
+                icon={Code}
+                data-testid="stat-algorithm"
+              />
+              <StatBox
+                label="Payout Interval"
+                value={(stats.payoutInterval / 3600).toFixed(1)}
+                unit="hours"
+                icon={Clock}
+                decimals={1}
+                data-testid="stat-payout-interval"
+              />
+              <StatBox
                 label="Current Luck"
                 value={stats.currentLuck}
                 unit="%"
                 icon={Award}
-                decimals={2}
-              />
-              <StatBox
-                label="Block Difficulty"
-                value={stats.blockDifficulty >= 1e6 ? (stats.blockDifficulty / 1e6).toFixed(2) : (stats.blockDifficulty / 1e3).toFixed(2)}
-                unit={stats.blockDifficulty >= 1e6 ? "M" : "K"}
-                icon={TrendingUp}
                 decimals={2}
               />
               <StatBox
@@ -197,7 +215,7 @@ export default function Home() {
               />
             </>
           ) : (
-            <LoadingSkeleton type="stat" count={8} />
+            <LoadingSkeleton type="stat" count={10} />
           )}
         </div>
 
