@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -6,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { SplashScreen } from "@/components/SplashScreen";
 import Home from "@/pages/Home";
 import MinerDetails from "@/pages/MinerDetails";
 import BlockLookup from "@/pages/BlockLookup";
@@ -45,6 +47,19 @@ function Router() {
 }
 
 function App() {
+  const [showSplash, setShowSplash] = useState(() => {
+    // Check if this is a fresh session (not returning from another page)
+    if (typeof window !== "undefined") {
+      return !sessionStorage.getItem("dagpulse_splash_shown");
+    }
+    return true;
+  });
+
+  const handleSplashComplete = () => {
+    sessionStorage.setItem("dagpulse_splash_shown", "true");
+    setShowSplash(false);
+  };
+
   const style = {
     "--sidebar-width": "16rem",
     "--sidebar-width-icon": "3rem",
@@ -54,8 +69,14 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="dark">
         <TooltipProvider>
+          {showSplash && (
+            <SplashScreen 
+              onComplete={handleSplashComplete} 
+              duration={3000} 
+            />
+          )}
           <SidebarProvider style={style as React.CSSProperties}>
-            <div className="flex h-screen w-full">
+            <div className={`flex h-screen w-full ${showSplash ? "opacity-0" : "opacity-100"} transition-opacity duration-500`}>
               <AppSidebar />
               <div className="flex flex-col flex-1 overflow-y-auto">
                 <Router />
