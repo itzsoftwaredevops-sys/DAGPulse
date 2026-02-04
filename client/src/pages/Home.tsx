@@ -28,7 +28,7 @@ export default function Home() {
   const [, setLocation] = useLocation();
   const [wsConnected, setWsConnected] = useState(false);
   const [liveStats, setLiveStats] = useState<MiningStats | null>(null);
-  const [hashrateHistory, setHashrateHistory] = useState<HashrateDataPoint[]>([]);
+  const [stakingPowerHistory, setStakingPowerHistory] = useState<HashrateDataPoint[]>([]);
   const lastBlockHeightRef = useRef<number>(0);
   const lastStatsRef = useRef<MiningStats | null>(null);
 
@@ -36,7 +36,7 @@ export default function Home() {
     queryKey: ["/api/stats"],
   });
 
-  const { data: topMiners, isLoading: minersLoading } = useQuery<Miner[]>({
+  const { data: topValidators, isLoading: validatorsLoading } = useQuery<Miner[]>({
     queryKey: ["/api/miners/top"],
   });
 
@@ -67,26 +67,26 @@ export default function Home() {
           ) {
             notificationStore.addNotification(
               "block_found",
-              "New Block Mined!",
-              `Block #${message.data.blockHeight} with ${(message.data.blockReward).toFixed(2)} BDAG reward`
+              "New Block Validated!",
+              `Block #${message.data.blockHeight} with ${(message.data.blockReward).toFixed(2)} AVAX reward`
             );
           }
 
           // Notify on price milestone
           if (
             lastStatsRef.current &&
-            message.data.bdagPrice > lastStatsRef.current.bdagPrice * 1.1
+            message.data.avaxPrice > lastStatsRef.current.avaxPrice * 1.05
           ) {
             notificationStore.addNotification(
               "milestone",
               "Price Milestone Reached!",
-              `BDAG price increased to $${message.data.bdagPrice.toFixed(4)}`
+              `AVAX price increased to $${message.data.avaxPrice.toFixed(2)}`
             );
           }
 
           lastStatsRef.current = message.data;
         } else if (message.type === "hashrate_update") {
-          setHashrateHistory((prev) => {
+          setStakingPowerHistory((prev) => {
             const newHistory = [...prev, message.data];
             return newHistory.slice(-30);
           });
@@ -128,7 +128,7 @@ export default function Home() {
                 </span>
               </h1>
               <p className="mt-2 text-lg text-muted-foreground md:text-xl">
-                Real-Time BlockDAG Mining Dashboard
+                Real-Time Avalanche Network Dashboard
               </p>
             </div>
             <div className="flex items-center gap-2 rounded-full border border-border/50 bg-card/50 px-4 py-2 backdrop-blur-sm">
@@ -146,14 +146,14 @@ export default function Home() {
           {stats ? (
             <>
               <StatBox
-                label="Miners Online"
-                value={stats.minersOnline}
+                label="Validators Online"
+                value={stats.validatorsOnline}
                 icon={Users}
               />
               <StatBox
-                label="Pool Hashrate"
-                value={stats.poolHashrate >= 1e9 ? (stats.poolHashrate / 1e9).toFixed(2) : (stats.poolHashrate / 1e6).toFixed(2)}
-                unit={stats.poolHashrate >= 1e9 ? "GH/s" : "MH/s"}
+                label="Pool Staking Power"
+                value={stats.poolStakingPower >= 1e6 ? (stats.poolStakingPower / 1e6).toFixed(2) : (stats.poolStakingPower / 1e3).toFixed(2)}
+                unit={stats.poolStakingPower >= 1e6 ? "M AVAX" : "K AVAX"}
                 icon={Zap}
                 decimals={2}
               />
@@ -164,40 +164,40 @@ export default function Home() {
                 data-testid="stat-block-height"
               />
               <StatBox
-                label="BDAG Price"
-                value={stats.bdagPrice}
+                label="AVAX Price"
+                value={stats.avaxPrice}
                 unit="USD"
                 icon={DollarSign}
-                decimals={4}
+                decimals={2}
               />
               <StatBox
-                label="Network Hashrate"
-                value={stats.networkHashrate >= 1e9 ? (stats.networkHashrate / 1e9).toFixed(2) : (stats.networkHashrate / 1e6).toFixed(2)}
-                unit={stats.networkHashrate >= 1e9 ? "GH/s" : "MH/s"}
+                label="Network Staking Power"
+                value={stats.networkStakingPower >= 1e6 ? (stats.networkStakingPower / 1e6).toFixed(2) : (stats.networkStakingPower / 1e3).toFixed(2)}
+                unit={stats.networkStakingPower >= 1e6 ? "M AVAX" : "K AVAX"}
                 icon={Activity}
                 decimals={2}
               />
               <StatBox
                 label="Network Difficulty"
-                value={stats.blockDifficulty >= 1e6 ? (stats.blockDifficulty / 1e6).toFixed(2) : (stats.blockDifficulty / 1e3).toFixed(2)}
-                unit={stats.blockDifficulty >= 1e6 ? "M" : "K"}
+                value={stats.networkDifficulty >= 1e6 ? (stats.networkDifficulty / 1e6).toFixed(2) : (stats.networkDifficulty / 1e3).toFixed(2)}
+                unit={stats.networkDifficulty >= 1e6 ? "M" : "K"}
                 icon={TrendingUp}
                 decimals={2}
                 data-testid="stat-network-difficulty"
               />
               <StatBox
-                label="Algorithm"
-                value={stats.algorithm}
+                label="Consensus Protocol"
+                value={stats.consensusProtocol}
                 icon={Code}
-                data-testid="stat-algorithm"
+                data-testid="stat-consensus"
               />
               <StatBox
-                label="Payout Interval"
-                value={(stats.payoutInterval / 3600).toFixed(1)}
+                label="Reward Interval"
+                value={(stats.rewardInterval / 3600).toFixed(1)}
                 unit="hours"
                 icon={Clock}
                 decimals={1}
-                data-testid="stat-payout-interval"
+                data-testid="stat-reward-interval"
               />
               <StatBox
                 label="Current Luck"
@@ -209,7 +209,7 @@ export default function Home() {
               <StatBox
                 label="Block Reward"
                 value={stats.blockReward}
-                unit="BDAG"
+                unit="AVAX"
                 icon={Database}
                 decimals={2}
               />
@@ -220,8 +220,8 @@ export default function Home() {
         </div>
 
         <div className="mb-8">
-          {hashrateHistory.length > 0 ? (
-            <HashrateChart data={hashrateHistory} height={350} />
+          {stakingPowerHistory.length > 0 ? (
+            <HashrateChart data={stakingPowerHistory} height={350} />
           ) : (
             <LoadingSkeleton type="chart" count={1} />
           )}
@@ -262,30 +262,30 @@ export default function Home() {
         <div>
           <div className="mb-4 flex items-center justify-between">
             <h2 className="font-['Space_Grotesk'] text-2xl font-semibold text-foreground">
-              Top Miners
+              Top Validators
             </h2>
             <button
               onClick={() => setLocation("/miners")}
               className="text-sm text-primary hover:text-primary/80 hover-elevate active-elevate-2 rounded-lg px-3 py-1"
-              data-testid="link-view-all-miners"
+              data-testid="link-view-all-validators"
             >
               View All →
             </button>
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {minersLoading ? (
+            {validatorsLoading ? (
               <LoadingSkeleton type="card" count={6} />
-            ) : topMiners && topMiners.length > 0 ? (
-              topMiners.slice(0, 6).map((miner) => (
+            ) : topValidators && topValidators.length > 0 ? (
+              topValidators.slice(0, 6).map((validator) => (
                 <MinerCard
-                  key={miner.address}
-                  miner={miner}
-                  onClick={() => setLocation(`/miners/${miner.address}`)}
+                  key={validator.address}
+                  miner={validator}
+                  onClick={() => setLocation(`/miners/${validator.address}`)}
                 />
               ))
             ) : (
               <div className="col-span-3 py-12 text-center text-muted-foreground">
-                No miners found
+                No validators found
               </div>
             )}
           </div>
@@ -294,7 +294,7 @@ export default function Home() {
 
       <footer className="mt-16 border-t border-border/50 bg-card/20 py-8 backdrop-blur-sm">
         <div className="mx-auto max-w-7xl px-4 text-center text-sm text-muted-foreground">
-          <p>© 2024 DAGPulse. Real-time BlockDAG mining analytics.</p>
+          <p>© 2024 DAGPulse. Real-time Avalanche network analytics.</p>
         </div>
       </footer>
     </div>

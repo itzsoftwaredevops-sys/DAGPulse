@@ -17,7 +17,7 @@ import type { Miner, Block } from "@shared/schema";
 export default function ExportData() {
   const [exporting, setExporting] = useState<string | null>(null);
 
-  const { data: miners, isLoading: minersLoading } = useQuery<Miner[]>({
+  const { data: validators, isLoading: validatorsLoading } = useQuery<Miner[]>({
     queryKey: ["/api/miners"],
   });
 
@@ -25,19 +25,19 @@ export default function ExportData() {
     queryKey: ["/api/blocks"],
   });
 
-  const handleExport = (format: "csv" | "json", dataType: "miners" | "blocks") => {
+  const handleExport = (format: "csv" | "json", dataType: "validators" | "blocks") => {
     setExporting(`${dataType}-${format}`);
 
     try {
       let content = "";
       let filename = "";
 
-      if (dataType === "miners" && miners) {
+      if (dataType === "validators" && validators) {
         content =
           format === "csv"
-            ? exportMinersToCSV(miners)
-            : exportMinersToJSON(miners);
-        filename = `miners-export-${new Date().toISOString().split("T")[0]}.${format}`;
+            ? exportMinersToCSV(validators)
+            : exportMinersToJSON(validators);
+        filename = `validators-export-${new Date().toISOString().split("T")[0]}.${format}`;
       } else if (dataType === "blocks" && blocks) {
         content =
           format === "csv"
@@ -54,7 +54,7 @@ export default function ExportData() {
     }
   };
 
-  const isLoading = minersLoading || blocksLoading;
+  const isLoading = validatorsLoading || blocksLoading;
 
   return (
     <div className="min-h-screen bg-background">
@@ -65,22 +65,22 @@ export default function ExportData() {
           <div>
             <h1 className="text-3xl font-bold md:text-4xl">Export Data</h1>
             <p className="text-muted-foreground">
-              Download mining reports and block history in CSV or JSON format
+              Download validation reports and block history in CSV or JSON format
             </p>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
-            {/* Miners Export */}
+            {/* Validators Export */}
             <Card className="p-6 space-y-4">
               <div>
-                <h2 className="text-xl font-semibold mb-2">Miners Report</h2>
+                <h2 className="text-xl font-semibold mb-2">Validators Report</h2>
                 <p className="text-sm text-muted-foreground">
-                  Export all miner statistics including hashrate, blocks, rewards, and
+                  Export all validator statistics including staking power, blocks validated, rewards, and
                   network contribution
                 </p>
                 <div className="mt-4 p-3 bg-card/50 rounded-lg border border-border/50">
                   <p className="text-sm">
-                    <strong>{miners?.length || 0}</strong> miners available
+                    <strong>{validators?.length || 0}</strong> validators available
                   </p>
                 </div>
               </div>
@@ -88,22 +88,22 @@ export default function ExportData() {
               <div className="space-y-2">
                 <Button
                   className="w-full"
-                  onClick={() => handleExport("csv", "miners")}
-                  disabled={isLoading || exporting === "miners-csv"}
-                  data-testid="button-export-miners-csv"
+                  onClick={() => handleExport("csv", "validators")}
+                  disabled={isLoading || exporting === "validators-csv"}
+                  data-testid="button-export-validators-csv"
                 >
                   <FileText className="mr-2 h-4 w-4" />
-                  {exporting === "miners-csv" ? "Exporting..." : "Export as CSV"}
+                  {exporting === "validators-csv" ? "Exporting..." : "Export as CSV"}
                 </Button>
                 <Button
                   variant="outline"
                   className="w-full"
-                  onClick={() => handleExport("json", "miners")}
-                  disabled={isLoading || exporting === "miners-json"}
-                  data-testid="button-export-miners-json"
+                  onClick={() => handleExport("json", "validators")}
+                  disabled={isLoading || exporting === "validators-json"}
+                  data-testid="button-export-validators-json"
                 >
                   <FileJson className="mr-2 h-4 w-4" />
-                  {exporting === "miners-json" ? "Exporting..." : "Export as JSON"}
+                  {exporting === "validators-json" ? "Exporting..." : "Export as JSON"}
                 </Button>
               </div>
             </Card>
@@ -168,7 +168,7 @@ export default function ExportData() {
               <div>
                 <p className="font-medium mb-1">Data Included</p>
                 <p className="text-muted-foreground">
-                  All miner statistics and block details from the current network state. Data
+                  All validator statistics and block details from the current network state. Data
                   is exported as-is without historical tracking.
                 </p>
               </div>

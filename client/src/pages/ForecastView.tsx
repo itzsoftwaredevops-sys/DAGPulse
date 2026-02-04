@@ -20,7 +20,7 @@ export default function ForecastView() {
   });
 
   // Simple linear regression for forecasting
-  const predictHashrate = (data: HashrateDataPoint[]): number => {
+  const predictStakingPower = (data: HashrateDataPoint[]): number => {
     if (data.length < 2) return data[data.length - 1]?.hashrate || 0;
 
     const n = data.length;
@@ -38,7 +38,7 @@ export default function ForecastView() {
     if (!history || history.length === 0) return [];
     
     const lastTimestamp = history[history.length - 1].timestamp;
-    const predicted = predictHashrate(history);
+    const predicted = predictStakingPower(history);
     const current = history[history.length - 1].hashrate;
     const variance = Math.abs(predicted - current) / current;
     
@@ -59,6 +59,12 @@ export default function ForecastView() {
       : "down"
     : "stable";
 
+  const formatStakingPower = (power: number) => {
+    if (power >= 1e6) return `${(power / 1e6).toFixed(2)} M AVAX`;
+    if (power >= 1e3) return `${(power / 1e3).toFixed(2)} K AVAX`;
+    return `${power.toFixed(2)} AVAX`;
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -66,8 +72,8 @@ export default function ForecastView() {
       <main className="mx-auto max-w-7xl px-4 py-8 md:px-6">
         <div className="space-y-8">
           <div>
-            <h1 className="text-3xl font-bold md:text-4xl">Hashrate Forecast</h1>
-            <p className="text-muted-foreground">Predictive analytics for mining performance</p>
+            <h1 className="text-3xl font-bold md:text-4xl">Staking Power Forecast</h1>
+            <p className="text-muted-foreground">Predictive analytics for validation performance</p>
           </div>
 
           <div className="flex flex-col gap-6">
@@ -102,8 +108,8 @@ export default function ForecastView() {
               <Card className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Current Hashrate</p>
-                    <p className="font-['Space_Grotesk'] text-2xl font-bold">{(stats?.poolHashrate ? stats.poolHashrate / 1e6 : 0).toFixed(2)} MH/s</p>
+                    <p className="text-sm text-muted-foreground">Current Staking Power</p>
+                    <p className="font-['Space_Grotesk'] text-2xl font-bold">{formatStakingPower(stats?.poolStakingPower || 0)}</p>
                   </div>
                   <Activity className="h-8 w-8 text-muted-foreground/50" />
                 </div>
@@ -132,7 +138,7 @@ export default function ForecastView() {
           </div>
 
           <div className="rounded-lg border border-border/50 bg-card/50 p-6 backdrop-blur-sm">
-            <h2 className="mb-6 text-lg font-semibold">Hashrate Trend (24h + Forecast)</h2>
+            <h2 className="mb-6 text-lg font-semibold">Staking Power Trend (24h + Forecast)</h2>
             {forecastData.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={forecastData}>
@@ -141,7 +147,7 @@ export default function ForecastView() {
                   <YAxis stroke="rgba(255,255,255,0.5)" />
                   <Tooltip 
                     contentStyle={{ backgroundColor: "rgba(0,0,0,0.8)", border: "1px solid rgba(255,255,255,0.2)" }}
-                    formatter={(value: any) => value.toFixed(2)}
+                    formatter={(value: any) => formatStakingPower(value)}
                   />
                   <Line 
                     type="monotone" 
@@ -162,7 +168,7 @@ export default function ForecastView() {
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-3">
                 <span className="text-neon-blue">•</span>
-                <span>Hashrate shows a <strong>{trend}</strong> trend based on recent 24-hour activity</span>
+                <span>Staking power shows a <strong>{trend}</strong> trend based on recent 24-hour activity</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="text-neon-purple">•</span>
@@ -170,7 +176,7 @@ export default function ForecastView() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="text-neon-blue">•</span>
-                <span>Higher variance indicates potential worker instability</span>
+                <span>Higher variance indicates potential node instability</span>
               </li>
             </ul>
           </div>

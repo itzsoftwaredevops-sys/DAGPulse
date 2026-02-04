@@ -1,23 +1,35 @@
 import { z } from "zod";
 
-// Real-time Mining Statistics
-export const miningStatsSchema = z.object({
-  minersOnline: z.number(),
+// Real-time Network Statistics (Avalanche)
+export const networkStatsSchema = z.object({
+  validatorsOnline: z.number(),
   currentLuck: z.number(),
-  poolHashrate: z.number(),
-  networkHashrate: z.number(),
+  poolStakingPower: z.number(),
+  networkStakingPower: z.number(),
   blockHeight: z.number(),
-  blockDifficulty: z.number(),
-  algorithm: z.string(),
-  payoutInterval: z.number(),
+  networkDifficulty: z.number(),
+  consensusProtocol: z.string(),
+  rewardInterval: z.number(),
   blockReward: z.number(),
-  bdagPrice: z.number(),
+  avaxPrice: z.number(),
   timestamp: z.number(),
 });
 
-export type MiningStats = z.infer<typeof miningStatsSchema>;
+export type NetworkStats = z.infer<typeof networkStatsSchema>;
 
-// Hashrate Data Point for Charts
+// Legacy alias for backward compatibility
+export const miningStatsSchema = networkStatsSchema;
+export type MiningStats = NetworkStats;
+
+// Staking Power Data Point for Charts
+export const stakingPowerDataPointSchema = z.object({
+  timestamp: z.number(),
+  stakingPower: z.number(),
+});
+
+export type StakingPowerDataPoint = z.infer<typeof stakingPowerDataPointSchema>;
+
+// Legacy alias for backward compatibility
 export const hashrateDataPointSchema = z.object({
   timestamp: z.number(),
   hashrate: z.number(),
@@ -25,11 +37,11 @@ export const hashrateDataPointSchema = z.object({
 
 export type HashrateDataPoint = z.infer<typeof hashrateDataPointSchema>;
 
-// Worker Device
+// Worker/Node Device
 export const workerSchema = z.object({
   id: z.string(),
   name: z.string(),
-  hashrate: z.number(),
+  stakingPower: z.number(),
   shares: z.number(),
   lastSeen: z.number(),
   status: z.enum(["online", "offline", "idle"]),
@@ -37,21 +49,25 @@ export const workerSchema = z.object({
 
 export type Worker = z.infer<typeof workerSchema>;
 
-// Miner Profile
-export const minerSchema = z.object({
+// Validator Profile
+export const validatorSchema = z.object({
   address: z.string(),
   totalBlocks: z.number(),
   totalRewards: z.number(),
-  currentHashrate: z.number(),
-  averageHashrate24h: z.number(),
+  currentStakingPower: z.number(),
+  averageStakingPower24h: z.number(),
   currentLuck: z.number(),
   networkContribution: z.number(),
   workers: z.array(workerSchema),
-  hashrateHistory: z.array(hashrateDataPointSchema),
+  stakingPowerHistory: z.array(hashrateDataPointSchema),
   lastActive: z.number(),
 });
 
-export type Miner = z.infer<typeof minerSchema>;
+export type Validator = z.infer<typeof validatorSchema>;
+
+// Legacy alias for backward compatibility
+export const minerSchema = validatorSchema;
+export type Miner = Validator;
 
 // Block Information
 export const blockSchema = z.object({
@@ -60,7 +76,7 @@ export const blockSchema = z.object({
   timestamp: z.number(),
   difficulty: z.number(),
   reward: z.number(),
-  minerAddress: z.string(),
+  validatorAddress: z.string(),
   confirmations: z.number(),
   size: z.number(),
   transactions: z.number(),
@@ -70,8 +86,8 @@ export type Block = z.infer<typeof blockSchema>;
 
 // Search Result Type
 export const searchResultSchema = z.object({
-  type: z.enum(["miner", "block"]),
-  data: z.union([minerSchema, blockSchema]),
+  type: z.enum(["validator", "block"]),
+  data: z.union([validatorSchema, blockSchema]),
 });
 
 export type SearchResult = z.infer<typeof searchResultSchema>;
@@ -80,7 +96,7 @@ export type SearchResult = z.infer<typeof searchResultSchema>;
 export const wsMessageSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("stats_update"),
-    data: miningStatsSchema,
+    data: networkStatsSchema,
   }),
   z.object({
     type: z.literal("new_block"),
@@ -97,7 +113,7 @@ export type WSMessage = z.infer<typeof wsMessageSchema>;
 // Prediction/Forecast Data
 export const forecastSchema = z.object({
   timestamp: z.number(),
-  predictedHashrate: z.number(),
+  predictedStakingPower: z.number(),
   confidence: z.number(), // 0-100
   trend: z.enum(["up", "down", "stable"]),
 });
@@ -106,13 +122,13 @@ export type Forecast = z.infer<typeof forecastSchema>;
 
 // Risk Assessment
 export const riskAssessmentSchema = z.object({
-  minerAddress: z.string(),
+  validatorAddress: z.string(),
   riskLevel: z.enum(["low", "medium", "high"]),
   score: z.number(), // 0-100
   factors: z.object({
     inactivityHours: z.number(),
-    hashrateVariance: z.number(),
-    workerDowntime: z.number(),
+    stakingPowerVariance: z.number(),
+    nodeDowntime: z.number(),
   }),
 });
 

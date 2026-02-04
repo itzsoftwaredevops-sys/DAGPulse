@@ -10,27 +10,27 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 const MOCK_GUILDS = [
   {
     id: "guild-1",
-    name: "Crypto Miners United",
+    name: "Avalanche Validators United",
     members: 42,
-    totalHashrate: 125400000,
+    totalStakingPower: 125400000,
     totalRewards: 2500,
     joinedDate: "2024-06-15",
     rank: 1,
   },
   {
     id: "guild-2",
-    name: "BDAG Collective",
+    name: "AVAX Staking Collective",
     members: 38,
-    totalHashrate: 98700000,
+    totalStakingPower: 98700000,
     totalRewards: 2100,
     joinedDate: "2024-07-01",
     rank: 2,
   },
   {
     id: "guild-3",
-    name: "Hash Power Alliance",
+    name: "Snowman Alliance",
     members: 25,
-    totalHashrate: 67200000,
+    totalStakingPower: 67200000,
     totalRewards: 1400,
     joinedDate: "2024-08-10",
     rank: 3,
@@ -39,6 +39,12 @@ const MOCK_GUILDS = [
 
 export default function Guilds() {
   const [newGuildName, setNewGuildName] = useState("");
+
+  const formatStakingPower = (power: number) => {
+    if (power >= 1e6) return `${(power / 1e6).toFixed(2)} M AVAX`;
+    if (power >= 1e3) return `${(power / 1e3).toFixed(2)} K AVAX`;
+    return `${power.toFixed(2)} AVAX`;
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -50,7 +56,7 @@ export default function Guilds() {
             <div>
               <h1 className="text-3xl font-bold md:text-4xl">Guilds & Teams</h1>
               <p className="text-muted-foreground">
-                Join mining guilds to collaborate and compete with other miners
+                Join validator guilds to collaborate and compete with other validators
               </p>
             </div>
             <Button size="lg" data-testid="button-create-guild">
@@ -89,12 +95,12 @@ export default function Guilds() {
                         <p className="font-semibold">{guild.members}</p>
                       </div>
                       <div className="flex items-center justify-between">
-                        <p className="text-sm text-muted-foreground">Total Hashrate</p>
-                        <p className="font-semibold">{(guild.totalHashrate / 1e6).toFixed(2)} MH/s</p>
+                        <p className="text-sm text-muted-foreground">Total Staking Power</p>
+                        <p className="font-semibold">{formatStakingPower(guild.totalStakingPower)}</p>
                       </div>
                       <div className="flex items-center justify-between">
                         <p className="text-sm text-muted-foreground">Rewards</p>
-                        <p className="font-semibold text-green-500">{guild.totalRewards.toFixed(2)} BDAG</p>
+                        <p className="font-semibold text-green-500">{guild.totalRewards.toFixed(2)} AVAX</p>
                       </div>
                     </div>
 
@@ -111,7 +117,7 @@ export default function Guilds() {
                 <Users className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
                 <h3 className="font-semibold mb-2">No Guild Joined Yet</h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Create a new guild or join an existing one to start collaborating with other miners
+                  Create a new guild or join an existing one to start collaborating with other validators
                 </p>
                 <div className="space-y-3 max-w-sm mx-auto">
                   <Input
@@ -136,14 +142,14 @@ export default function Guilds() {
                 <TrendingUp className="h-6 w-6 text-primary mb-2" />
                 <p className="font-medium mb-1">Aggregated Stats</p>
                 <p className="text-sm text-muted-foreground">
-                  View combined hashrate, blocks, and rewards across your guild
+                  View combined staking power, blocks validated, and rewards across your guild
                 </p>
               </div>
               <div>
                 <Users className="h-6 w-6 text-primary mb-2" />
                 <p className="font-medium mb-1">Team Collaboration</p>
                 <p className="text-sm text-muted-foreground">
-                  Share insights and optimize mining together
+                  Share insights and optimize validation together
                 </p>
               </div>
               <div>

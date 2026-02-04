@@ -31,13 +31,12 @@ interface HashrateChartProps {
   height?: number;
 }
 
-export function HashrateChart({ data, title = "Pool Hashrate", height = 300 }: HashrateChartProps) {
-  const formatHashrate = (hashrate: number) => {
-    if (hashrate >= 1e12) return `${(hashrate / 1e12).toFixed(2)} TH/s`;
-    if (hashrate >= 1e9) return `${(hashrate / 1e9).toFixed(2)} GH/s`;
-    if (hashrate >= 1e6) return `${(hashrate / 1e6).toFixed(2)} MH/s`;
-    if (hashrate >= 1e3) return `${(hashrate / 1e3).toFixed(2)} KH/s`;
-    return `${hashrate.toFixed(2)} H/s`;
+export function HashrateChart({ data, title = "Pool Staking Power", height = 300 }: HashrateChartProps) {
+  const formatStakingPower = (power: number) => {
+    if (power >= 1e9) return `${(power / 1e9).toFixed(2)} B AVAX`;
+    if (power >= 1e6) return `${(power / 1e6).toFixed(2)} M AVAX`;
+    if (power >= 1e3) return `${(power / 1e3).toFixed(2)} K AVAX`;
+    return `${power.toFixed(2)} AVAX`;
   };
 
   const formatTime = (timestamp: number) => {
@@ -49,7 +48,7 @@ export function HashrateChart({ data, title = "Pool Hashrate", height = 300 }: H
     labels: data.map((point) => formatTime(point.timestamp)),
     datasets: [
       {
-        label: "Hashrate",
+        label: "Staking Power",
         data: data.map((point) => point.hashrate),
         borderColor: "rgb(139, 92, 246)",
         backgroundColor: (context: any) => {
@@ -93,7 +92,7 @@ export function HashrateChart({ data, title = "Pool Hashrate", height = 300 }: H
         callbacks: {
           label: (context) => {
             const value = context.parsed.y ?? 0;
-            return `${formatHashrate(value)}`;
+            return `${formatStakingPower(value)}`;
           },
         },
       },
@@ -121,7 +120,7 @@ export function HashrateChart({ data, title = "Pool Hashrate", height = 300 }: H
           color: "rgba(255, 255, 255, 0.5)",
           callback: (value) => {
             const numValue = typeof value === 'number' ? value : 0;
-            return formatHashrate(numValue);
+            return formatStakingPower(numValue);
           },
           font: {
             size: 11,
@@ -137,7 +136,7 @@ export function HashrateChart({ data, title = "Pool Hashrate", height = 300 }: H
   };
 
   return (
-    <Card className="p-6" data-testid="card-hashrate-chart">
+    <Card className="p-6" data-testid="card-staking-power-chart">
       <div className="mb-4 flex items-center justify-between">
         <h3 className="font-['Space_Grotesk'] text-lg font-semibold text-foreground">
           {title}

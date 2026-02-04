@@ -101,7 +101,7 @@ export default function BlockLookup() {
               Block Not Found
             </h2>
             <p className="text-muted-foreground mb-6">
-              Block #{blockNumber} doesn't exist or hasn't been mined yet.
+              Block #{blockNumber} doesn't exist or hasn't been validated yet.
             </p>
             <Button onClick={() => setLocation("/blocks")} data-testid="button-explore-blocks">
               Explore Recent Blocks
@@ -171,22 +171,22 @@ export default function BlockLookup() {
                     <div className="mb-2 flex items-center gap-2">
                       <User className="h-4 w-4 text-muted-foreground" />
                       <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                        Miner Address
+                        Validator Address
                       </span>
                       <button
-                        onClick={() => handleCopy(block.minerAddress, "Miner Address")}
+                        onClick={() => handleCopy(block.validatorAddress, "Validator Address")}
                         className="ml-auto rounded p-1 hover-elevate active-elevate-2"
-                        data-testid="button-copy-miner"
+                        data-testid="button-copy-validator"
                       >
                         <Copy className="h-3 w-3 text-muted-foreground" />
                       </button>
                     </div>
                     <button
-                      onClick={() => setLocation(`/miners/${block.minerAddress}`)}
+                      onClick={() => setLocation(`/miners/${block.validatorAddress}`)}
                       className="font-mono text-sm text-primary hover:text-primary/80 break-all text-left"
-                      data-testid="link-miner-address"
+                      data-testid="link-validator-address"
                     >
-                      {truncateHash(block.minerAddress)}
+                      {truncateHash(block.validatorAddress)}
                     </button>
                   </div>
 
@@ -214,7 +214,7 @@ export default function BlockLookup() {
                   <div className="rounded-lg border border-border/50 bg-card/50 p-4">
                     <p className="mb-1 text-xs text-muted-foreground">Reward</p>
                     <p className="font-['Space_Grotesk'] text-xl font-bold text-foreground" data-testid="text-reward">
-                      {block.reward} BDAG
+                      {block.reward} AVAX
                     </p>
                   </div>
 

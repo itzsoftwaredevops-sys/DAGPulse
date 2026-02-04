@@ -13,13 +13,13 @@ import { useContractInteraction } from "@/lib/useContractInteraction";
 export default function Settings() {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
-  const [stakeAmount, setStakeAmount] = useState("1");
+  const [stakeAmount, setStakeAmount] = useState("2000");
   const [contractAddress, setContractAddress] = useState(localStorage.getItem("contractAddress") || "");
   const { toast } = useToast();
   
   const CONTRACT_CONFIG = {
     address: contractAddress || "0x0000000000000000000000000000000000000000",
-    chainId: 11155111, // Sepolia testnet
+    chainId: 43113, // Avalanche Fuji Testnet
   };
   
   const { loading: contractLoading, registerMiner, claimRewards, unstake } = useContractInteraction(CONTRACT_CONFIG);
@@ -100,7 +100,7 @@ export default function Settings() {
                 <Wallet className="h-6 w-6 text-primary" />
                 <div>
                   <h2 className="font-semibold">Wallet Connection</h2>
-                  <p className="text-sm text-muted-foreground">Connect your BlockDAG wallet</p>
+                  <p className="text-sm text-muted-foreground">Connect your Avalanche wallet</p>
                 </div>
               </div>
               {walletAddress ? (
@@ -143,7 +143,7 @@ export default function Settings() {
               <p className="text-xs text-muted-foreground">
                 <AlertCircle className="inline h-3 w-3 mr-2" />
                 MetaMask required for wallet connection. Make sure you have MetaMask extension
-                installed.
+                installed and connected to Avalanche network.
               </p>
             </div>
           </Card>
@@ -155,8 +155,8 @@ export default function Settings() {
                 <div className="flex items-center gap-4">
                   <Zap className="h-6 w-6 text-primary" />
                   <div>
-                    <h2 className="font-semibold">Smart Contract - Mining Rewards</h2>
-                    <p className="text-sm text-muted-foreground">Stake ETH to earn block rewards</p>
+                    <h2 className="font-semibold">Smart Contract - Staking Rewards</h2>
+                    <p className="text-sm text-muted-foreground">Stake AVAX to earn validation rewards</p>
                   </div>
                 </div>
                 <Badge variant="outline" className="gap-2">
@@ -167,7 +167,7 @@ export default function Settings() {
 
               <div className="space-y-4 border-t border-primary/20 pt-4">
                 <div className="space-y-2">
-                  <Label htmlFor="contract-address">Contract Address (Sepolia)</Label>
+                  <Label htmlFor="contract-address">Contract Address (Fuji Testnet)</Label>
                   <Input
                     id="contract-address"
                     placeholder="0x..."
@@ -180,21 +180,21 @@ export default function Settings() {
                     data-testid="input-contract-address"
                   />
                   <p className="text-xs text-muted-foreground">
-                    Deploy MiningRewards.sol to Sepolia and paste the contract address here
+                    Deploy StakingRewards.sol to Avalanche Fuji and paste the contract address here
                   </p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="stake-amount">Stake Amount (ETH)</Label>
+                    <Label htmlFor="stake-amount">Stake Amount (AVAX)</Label>
                     <Input
                       id="stake-amount"
                       type="number"
-                      min="0.1"
-                      step="0.1"
+                      min="2000"
+                      step="100"
                       value={stakeAmount}
                       onChange={(e) => setStakeAmount(e.target.value)}
-                      placeholder="1.0"
+                      placeholder="2000"
                       data-testid="input-stake-amount"
                     />
                   </div>
@@ -203,9 +203,9 @@ export default function Settings() {
                       className="w-full"
                       onClick={() => registerMiner(stakeAmount)}
                       disabled={contractLoading || !contractAddress}
-                      data-testid="button-register-miner"
+                      data-testid="button-register-validator"
                     >
-                      {contractLoading ? "Processing..." : "Register Miner"}
+                      {contractLoading ? "Processing..." : "Register Validator"}
                     </Button>
                   </div>
                 </div>
@@ -234,7 +234,7 @@ export default function Settings() {
                 <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 text-xs">
                   <p className="text-muted-foreground">
                     <AlertCircle className="inline h-3 w-3 mr-2" />
-                    Minimum stake: 1 ETH. Rewards calculated based on block difficulty. Use Sepolia testnet for testing.
+                    Minimum stake: 2000 AVAX. Rewards calculated based on validation performance. Use Fuji testnet for testing.
                   </p>
                 </div>
               </div>
@@ -250,8 +250,8 @@ export default function Settings() {
 
             <div className="space-y-4 border-t border-border/50 pt-4">
               <div className="flex items-center justify-between">
-                <Label htmlFor="notify-drops">Hashrate Drop Alerts (&gt;30%)</Label>
-                <Switch id="notify-drops" defaultChecked data-testid="switch-hashrate-alerts" />
+                <Label htmlFor="notify-drops">Staking Power Drop Alerts (&gt;30%)</Label>
+                <Switch id="notify-drops" defaultChecked data-testid="switch-staking-alerts" />
               </div>
               <div className="flex items-center justify-between">
                 <Label htmlFor="notify-blocks">New Block Notifications</Label>
@@ -294,7 +294,7 @@ export default function Settings() {
                   <option>USD ($)</option>
                   <option>EUR (€)</option>
                   <option>GBP (£)</option>
-                  <option>BDAG (native)</option>
+                  <option>AVAX (native)</option>
                 </select>
               </div>
             </div>
@@ -309,16 +309,16 @@ export default function Settings() {
 
             <div className="space-y-3 border-t border-border/50 pt-4 text-sm">
               <div>
-                <p className="font-medium">Pool Hashrate Calculation</p>
+                <p className="font-medium">Pool Staking Power Calculation</p>
                 <p className="text-muted-foreground">
-                  Sum of all online miners' current hashrate. Updated via WebSocket every 1-2s.
+                  Sum of all online validators' current staking power. Updated via WebSocket every 1-2s.
                 </p>
               </div>
 
               <div>
-                <p className="font-medium">Network Hashrate Source</p>
+                <p className="font-medium">Network Staking Power Source</p>
                 <p className="text-muted-foreground">
-                  Simulated realistic data (demo mode). Production: connects to BlockDAG network API.
+                  Simulated realistic data (demo mode). Production: connects to Avalanche network API.
                 </p>
               </div>
 

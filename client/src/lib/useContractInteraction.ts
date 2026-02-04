@@ -46,7 +46,7 @@ export function useContractInteraction(config: ContractConfig) {
 
       toast({
         title: 'Registration Pending',
-        description: 'Your miner registration is being processed',
+        description: 'Your validator registration is being processed on Avalanche C-Chain',
       });
 
       return {
@@ -91,7 +91,7 @@ export function useContractInteraction(config: ContractConfig) {
 
       toast({
         title: 'Claim Pending',
-        description: 'Your reward claim is being processed',
+        description: 'Your staking reward claim is being processed',
       });
 
       return {
@@ -139,7 +139,7 @@ export function useContractInteraction(config: ContractConfig) {
 
       toast({
         title: 'Unstake Pending',
-        description: 'Your unstake request is being processed',
+        description: 'Your AVAX unstake request is being processed',
       });
 
       return {

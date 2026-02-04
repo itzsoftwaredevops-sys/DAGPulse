@@ -1,30 +1,30 @@
 import type { Miner, Block, MiningStats } from "@shared/schema";
 
-export function exportMinersToCSV(miners: Miner[]): string {
-  if (!miners.length) return "";
+export function exportMinersToCSV(validators: Miner[]): string {
+  if (!validators.length) return "";
 
   const headers = [
     "Address",
-    "Total Blocks",
-    "Total Rewards (BDAG)",
-    "Current Hashrate (MH/s)",
-    "24h Avg Hashrate (MH/s)",
+    "Blocks Validated",
+    "Total Rewards (AVAX)",
+    "Current Staking Power (AVAX)",
+    "24h Avg Staking Power (AVAX)",
     "Current Luck (%)",
     "Network Contribution (%)",
-    "Active Workers",
+    "Active Nodes",
     "Last Active",
   ];
 
-  const rows = miners.map((miner) => [
-    miner.address,
-    miner.totalBlocks,
-    miner.totalRewards.toFixed(2),
-    miner.currentHashrate.toFixed(2),
-    miner.averageHashrate24h.toFixed(2),
-    miner.currentLuck.toFixed(1),
-    miner.networkContribution.toFixed(3),
-    miner.workers.filter((w) => w.status === "online").length,
-    new Date(miner.lastActive).toISOString(),
+  const rows = validators.map((validator) => [
+    validator.address,
+    validator.totalBlocks,
+    validator.totalRewards.toFixed(2),
+    validator.currentStakingPower.toFixed(2),
+    validator.averageStakingPower24h.toFixed(2),
+    validator.currentLuck.toFixed(1),
+    validator.networkContribution.toFixed(3),
+    validator.workers.filter((w) => w.status === "online").length,
+    new Date(validator.lastActive).toISOString(),
   ]);
 
   return [headers, ...rows].map((row) => row.map((cell) => `"${cell}"`).join(",")).join("\n");
@@ -36,10 +36,10 @@ export function exportBlocksToCSV(blocks: Block[]): string {
   const headers = [
     "Block Number",
     "Block Hash",
-    "Miner Address",
+    "Validator Address",
     "Timestamp",
     "Difficulty",
-    "Reward (BDAG)",
+    "Reward (AVAX)",
     "Confirmations",
     "Transactions",
     "Size (bytes)",
@@ -48,7 +48,7 @@ export function exportBlocksToCSV(blocks: Block[]): string {
   const rows = blocks.map((block) => [
     block.number,
     block.hash,
-    block.minerAddress,
+    block.validatorAddress,
     new Date(block.timestamp).toISOString(),
     block.difficulty.toFixed(2),
     block.reward.toFixed(2),
@@ -60,8 +60,8 @@ export function exportBlocksToCSV(blocks: Block[]): string {
   return [headers, ...rows].map((row) => row.map((cell) => `"${cell}"`).join(",")).join("\n");
 }
 
-export function exportMinersToJSON(miners: Miner[]): string {
-  return JSON.stringify(miners, null, 2);
+export function exportMinersToJSON(validators: Miner[]): string {
+  return JSON.stringify(validators, null, 2);
 }
 
 export function exportBlocksToJSON(blocks: Block[]): string {

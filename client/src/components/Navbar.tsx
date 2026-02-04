@@ -11,7 +11,7 @@ export function Navbar() {
 
   const navLinks = [
     { path: "/", label: "Dashboard" },
-    { path: "/miners", label: "Miners" },
+    { path: "/miners", label: "Validators" },
     { path: "/blocks", label: "Blocks" },
     { path: "/forecast", label: "Forecast" },
     { path: "/analytics", label: "Analytics" },
@@ -33,7 +33,7 @@ export function Navbar() {
                 DAGPulse
               </span>
               <span className="hidden text-xs text-muted-foreground sm:block">
-                Real-Time Mining
+                Avalanche Validator Analytics
               </span>
             </div>
           </div>

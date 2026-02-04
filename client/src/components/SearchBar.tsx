@@ -8,7 +8,7 @@ interface SearchBarProps {
   placeholder?: string;
 }
 
-export function SearchBar({ onSearch, placeholder = "Search miner address or block number..." }: SearchBarProps) {
+export function SearchBar({ onSearch, placeholder = "Search validator address or block number..." }: SearchBarProps) {
   const [query, setQuery] = useState("");
   const [, setLocation] = useLocation();
   const [isFocused, setIsFocused] = useState(false);

@@ -1,8 +1,8 @@
-# DAGPulse - BlockDAG Real-Time Mining Intelligence Suite
+# DAGPulse - Avalanche Network Real-Time Analytics Dashboard
 
 ## Overview
 
-DAGPulse is a production-ready mining intelligence platform for the BlockDAG network. It provides real-time analytics, predictive insights, and advanced visualization for monitoring mining operations. The application features live network metrics, miner profiles, block exploration, hashrate forecasting, and risk assessment tools. Built with a modern tech stack, it offers both WebSocket-based real-time updates and RESTful API endpoints, with a responsive, mobile-first interface using glassmorphism design principles.
+DAGPulse is a production-ready analytics dashboard for the Avalanche Network. It provides real-time validator statistics, staking analytics, predictive insights, and advanced visualization for monitoring validation operations. The application features live network metrics, validator profiles, block exploration, staking power forecasting, and risk assessment tools. Built with a modern tech stack, it offers both WebSocket-based real-time updates and RESTful API endpoints, with a responsive, mobile-first interface using glassmorphism design principles.
 
 ## User Preferences
 
@@ -33,14 +33,14 @@ Preferred communication style: Simple, everyday language.
 **Data Visualization**
 - Chart.js for animated gradient charts (primary charting library)
 - Recharts for advanced analytics visualizations
-- Custom `HashrateChart` component with real-time updates
-- Linear regression forecasting for hashrate predictions
+- Custom `HashrateChart` component with real-time updates (displays staking power)
+- Linear regression forecasting for staking power predictions
 
 **Real-Time Updates**
 - WebSocket connection on `/ws` path for live data streaming
 - Fallback to HTTP polling when WebSocket unavailable
 - 1-2 second update intervals for network statistics
-- Notification system for block discoveries and risk alerts
+- Notification system for block validations and risk alerts
 
 ### Backend Architecture
 
@@ -56,16 +56,17 @@ Preferred communication style: Simple, everyday language.
 
 **Data Storage**
 - In-memory storage implementation (`MemStorage` class in `storage.ts`)
-- Seeded with mock BlockDAG mining data
+- Seeded with mock Avalanche validator data
 - Real-time simulation engine generating realistic network metrics
 - No database currently in use (Drizzle ORM configured but not actively used)
 
 **API Design**
 - RESTful endpoints under `/api` prefix
 - Routes defined in `routes.ts`
-- Endpoints include: `/api/stats`, `/api/miners`, `/api/blocks`, `/api/hashrate`, `/api/forecast`, `/api/search`
+- Endpoints include: `/api/stats`, `/api/miners` (validators), `/api/blocks`, `/api/hashrate` (staking power), `/api/forecast`, `/api/search`, `/api/assistant`
 - Input validation using Zod schemas
 - Support for query parameters and path parameters
+- AI Assistant endpoint with comprehensive Avalanche staking knowledge
 
 **WebSocket Server**
 - WebSocket server integrated with HTTP server
@@ -75,7 +76,7 @@ Preferred communication style: Simple, everyday language.
 
 **Real-Time Simulation**
 - Background intervals generating live network metrics
-- Simulated miner activity, block discoveries, and hashrate fluctuations
+- Simulated validator activity, block validations, and staking power fluctuations
 - Broadcasts to all connected WebSocket clients
 
 ### Shared Type System
@@ -83,8 +84,9 @@ Preferred communication style: Simple, everyday language.
 **Schema Definitions** (`shared/schema.ts`)
 - Zod schemas for runtime validation and TypeScript type inference
 - Shared between frontend and backend for type consistency
-- Core types: `MiningStats`, `Miner`, `Block`, `Worker`, `HashrateDataPoint`, `Forecast`, `RiskAssessment`
+- Core types: `MiningStats`, `Miner` (Validator), `Block`, `Worker` (Node), `HashrateDataPoint` (StakingPowerDataPoint), `Forecast`, `RiskAssessment`
 - WebSocket message types validated with `wsMessageSchema`
+- AVAX price tracking with `avaxPrice` field
 
 **Type Safety**
 - Full end-to-end type safety from API to UI
@@ -95,7 +97,7 @@ Preferred communication style: Simple, everyday language.
 
 **Component Library**
 - shadcn/ui components (Radix UI primitives) configured in `components.json`
-- Custom components: `StatBox`, `MinerCard`, `BlockCard`, `HashrateChart`, `RiskIndicator`, `NotificationCenter`
+- Custom components: `StatBox`, `MinerCard` (ValidatorCard), `BlockCard`, `HashrateChart` (StakingPowerChart), `RiskIndicator`, `NotificationCenter`
 - Consistent spacing using Tailwind units (2, 4, 6, 8, 12, 16, 20)
 - Loading states with shimmer animations (`LoadingSkeleton`)
 
@@ -106,7 +108,7 @@ Preferred communication style: Simple, everyday language.
 
 **Navigation**
 - Sticky navbar with glassmorphism effect (`Navbar` component)
-- Routes: Home (`/`), All Miners (`/miners`), Miner Details (`/miners/:address`), All Blocks (`/blocks`), Block Lookup (`/blocks/:number`), Forecast (`/forecast`), Comparison (`/compare`), Analytics (`/analytics`), Export (`/export`)
+- Routes: Home (`/`), All Validators (`/miners`), Validator Details (`/miners/:address`), All Blocks (`/blocks`), Block Lookup (`/blocks/:number`), Forecast (`/forecast`), Comparison (`/compare`), Analytics (`/analytics`), Export (`/export`)
 - Theme toggle and notification center in navbar
 
 ### Build & Deployment
@@ -172,7 +174,7 @@ Preferred communication style: Simple, everyday language.
 
 **No Third-Party APIs**
 - Application uses simulated/mock data
-- No external mining pool APIs integrated
+- No external validator APIs integrated
 - Self-contained real-time simulation engine
 
 ### Asset Dependencies
@@ -197,35 +199,35 @@ Preferred communication style: Simple, everyday language.
 
 ## Smart Contract Integration
 
-### Mining Rewards Smart Contract (MiningRewards.sol)
+### Staking Rewards Smart Contract (StakingRewards.sol)
 
-**Purpose:** Decentralized miner verification, staking, and reward distribution on EVM-compatible networks.
+**Purpose:** Decentralized validator verification, staking, and reward distribution on Avalanche C-Chain.
 
 **Key Features:**
-- Miner registration with ETH staking (minimum 1 ETH)
-- Automatic reward calculation based on block difficulty
+- Validator registration with AVAX staking (minimum 2000 AVAX)
+- Automatic reward calculation based on validation performance
 - Reward claiming mechanism
 - Stake increase/decrease functionality
-- Admin controls for miner verification and contract management
+- Admin controls for validator verification and contract management
 
 **Core Functions:**
-- `registerMiner(address)` - Register with initial stake (payable)
+- `registerValidator(address)` - Register with initial stake (payable)
 - `increaseStake(address)` - Increase stake amount
 - `unstake(uint256)` - Unstake and withdraw funds
 - `claimRewards()` - Claim accumulated rewards
-- `recordBlockReward(blockNumber, minerAddress, difficulty)` - Record block discovery (admin only)
+- `recordBlockReward(blockNumber, validatorAddress, difficulty)` - Record block validation (admin only)
 
 **Events:**
-- `MinerRegistered` - When miner joins
-- `BlockDiscovered` - When block is found
+- `ValidatorRegistered` - When validator joins
+- `BlockValidated` - When block is validated
 - `RewardClaimed` - When rewards are claimed
-- `StakeIncreased` / `MinerUnstaked` - Stake modifications
+- `StakeIncreased` / `ValidatorUnstaked` - Stake modifications
 
 **Deployment:**
-- Target Network: Ethereum Sepolia Testnet (ChainId: 11155111)
+- Target Network: Avalanche Fuji Testnet (ChainId: 43113)
 - Solidity Version: ^0.8.19
 - License: MIT
-- Files: contracts/MiningRewards.sol, contracts/MiningRewards.json (ABI)
+- Files: contracts/StakingRewards.sol, contracts/StakingRewards.json (ABI)
 
 **Frontend Integration:**
 - Hook: `useContractInteraction` (client/src/lib/useContractInteraction.ts)
@@ -235,8 +237,8 @@ Preferred communication style: Simple, everyday language.
 
 **Backend Integration:**
 - Endpoint: GET /api/contract/status - Contract deployment info
-- Endpoint: GET /api/contract/miners/:address - Miner on-chain status
-- Endpoint: POST /api/contract/record-block - Record block reward discovery
+- Endpoint: GET /api/contract/validators/:address - Validator on-chain status
+- Endpoint: POST /api/contract/record-block - Record block reward validation
 - Ready for webhook integration from contract events
 
 **Architecture:**
@@ -245,20 +247,52 @@ User (MetaMask)
     ↓
 Frontend (useContractInteraction hook)
     ↓
-Ethereum/Sepolia Network
+Avalanche C-Chain / Fuji Testnet
     ↓
-MiningRewards Smart Contract
+StakingRewards Smart Contract
     ↓
 DAGPulse Backend (record block, verify status)
     ↓
-In-Memory Storage (miner stats, rewards)
+In-Memory Storage (validator stats, rewards)
 ```
 
-**Future Enhancements:**
-1. Deploy to BlockDAG native blockchain when available
-2. ERC-20 token rewards (BDAG tokens) instead of ETH
-3. Staking tier system with reward multipliers
-4. Referral bonuses for bringing new miners
-5. Governance DAO for parameter adjustments
-6. Cross-chain bridging for multi-network support
-7. Real-time contract event listeners with WebSocket broadcasts
+## Avalanche Network Specifics
+
+**Consensus Protocol:** Avalanche (Snowman) - Sub-second finality with high throughput
+**Block Time:** ~2 seconds
+**Minimum Stake:** 2000 AVAX for validators
+**Currency:** AVAX (native token)
+**Chain:** C-Chain (EVM compatible) for smart contracts
+**Testnet:** Fuji (chainId: 43113)
+**Mainnet:** Avalanche C-Chain (chainId: 43114)
+
+## Terminology Mapping
+
+| Original (BlockDAG) | Current (Avalanche) |
+|---------------------|---------------------|
+| Mining | Validation/Staking |
+| Miners | Validators |
+| Hashrate | Staking Power |
+| Workers | Nodes |
+| BDAG | AVAX |
+| Pool | Network |
+| Block Time | ~2s (Avalanche) |
+
+## Recent Changes
+
+- **Full Avalanche Migration**: Updated all terminology from BlockDAG to Avalanche
+- **Schema Updates**: Added `avaxPrice`, `validatorAddress`, `currentStakingPower`, `averageStakingPower24h` fields
+- **API Updates**: All endpoints now use Avalanche terminology
+- **UI Updates**: Dashboard, validator pages, analytics, and export tools updated
+- **Smart Contract**: Adapted for Avalanche C-Chain / Fuji testnet (chainId: 43113)
+- **AI Assistant**: Comprehensive Avalanche-specific responses for staking queries
+
+## Future Enhancements
+
+1. Deploy to Avalanche C-Chain mainnet when production-ready
+2. Integrate real Avalanche network APIs for live data
+3. Add delegation support for smaller stakers
+4. Implement governance features for parameter adjustments
+5. Cross-subnet analytics support
+6. Real-time contract event listeners with WebSocket broadcasts
+7. Historical data persistence with PostgreSQL

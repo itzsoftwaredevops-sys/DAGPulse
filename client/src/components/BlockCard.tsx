@@ -84,7 +84,7 @@ export function BlockCard({ block, onClick }: BlockCardProps) {
           <div>
             <p className="text-xs text-muted-foreground">Reward</p>
             <p className="font-['Space_Grotesk'] text-sm font-bold text-foreground" data-testid="text-reward">
-              {block.reward} BDAG
+              {block.reward} AVAX
             </p>
           </div>
           <div>

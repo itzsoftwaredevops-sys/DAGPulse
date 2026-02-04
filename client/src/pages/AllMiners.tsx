@@ -11,7 +11,7 @@ import type { Miner } from "@shared/schema";
 export default function AllMiners() {
   const [, setLocation] = useLocation();
 
-  const { data: miners, isLoading } = useQuery<Miner[]>({
+  const { data: validators, isLoading } = useQuery<Miner[]>({
     queryKey: ["/api/miners"],
   });
 
@@ -32,25 +32,25 @@ export default function AllMiners() {
 
         <div className="mb-8">
           <h1 className="font-['Space_Grotesk'] text-3xl font-bold text-foreground mb-4 text-center">
-            All Miners
+            All Validators
           </h1>
-          <SearchBar placeholder="Search by miner address..." />
+          <SearchBar placeholder="Search by validator address..." />
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {isLoading ? (
             <LoadingSkeleton type="card" count={9} />
-          ) : miners && miners.length > 0 ? (
-            miners.map((miner) => (
+          ) : validators && validators.length > 0 ? (
+            validators.map((validator) => (
               <MinerCard
-                key={miner.address}
-                miner={miner}
-                onClick={() => setLocation(`/miners/${miner.address}`)}
+                key={validator.address}
+                miner={validator}
+                onClick={() => setLocation(`/miners/${validator.address}`)}
               />
             ))
           ) : (
             <div className="col-span-3 py-12 text-center text-muted-foreground">
-              No miners found
+              No validators found
             </div>
           )}
         </div>

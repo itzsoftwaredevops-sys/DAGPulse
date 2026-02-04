@@ -5,51 +5,51 @@ import { AlertCircle, TrendingDown, HelpCircle } from "lucide-react";
 
 const FAQItems = [
   {
-    question: "Why did my hashrate drop suddenly?",
+    question: "Why did my staking power drop suddenly?",
     answer:
-      "Common causes: (1) Network difficulty spike, (2) Hardware overheating (check temps), (3) Worker disconnections (verify pool settings), (4) Intensity too high (reduce by 10%), (5) ISP throttling (contact provider)",
+      "Common causes: (1) Network congestion spike, (2) Node overheating (check temps), (3) Node disconnections (verify network settings), (4) Staking threshold issues (verify you meet minimum 2000 AVAX), (5) Validator slashing (maintain 99%+ uptime)",
     category: "Performance",
   },
   {
     question: "What does 'Luck' mean?",
     answer:
-      "Luck = Expected shares vs actual shares. Luck > 100% = you found more blocks than statistically expected. Luck < 100% = temporary variance. Normal: 80%-120%. Use >10h avg for stability.",
+      "Luck = Expected blocks vs actual blocks validated. Luck > 100% = you validated more blocks than statistically expected. Luck < 100% = temporary variance. Normal: 80%-120%. Use >10h avg for stability.",
     category: "Concepts",
   },
   {
-    question: "How do I maximize rewards?",
+    question: "How do I maximize staking rewards?",
     answer:
-      "1. Run multiple workers (load balance), 2. Optimize intensity (starts at 64, increase by 1 until stability drops), 3. Monitor temp < 75°C, 4. Check network latency to pool (target <50ms), 5. Enable SSL if available",
+      "1. Run redundant validator nodes (high availability), 2. Maintain 99%+ uptime, 3. Keep network latency <50ms to peers, 4. Monitor node sync status, 5. Stake sufficient AVAX above the 2000 minimum threshold",
     category: "Optimization",
   },
   {
-    question: "What causes orphaned blocks?",
+    question: "What causes validator slashing?",
     answer:
-      "Stale shares submitted after network finds block. Minimize by: reducing network latency, using geographically close pool, enabling TCP Fast Open, updating driver software.",
+      "Slashing occurs when validators act maliciously or have extended downtime. Avoid by: maintaining high uptime, never running duplicate validators with the same keys, keeping nodes properly synced, setting up monitoring alerts.",
     category: "Troubleshooting",
   },
   {
-    question: "How often do payouts happen?",
+    question: "How often do staking payouts happen?",
     answer:
-      "BlockDAG pays every ~1h (3600s payout interval). Must exceed pool minimum (usually 1 BDAG). Check your account; pending payouts appear in wallet.",
+      "Avalanche staking rewards accumulate continuously and are distributed based on validation performance. Check your validator dashboard for pending rewards. Rewards are calculated based on stake weight and uptime.",
     category: "Rewards",
   },
   {
-    question: "What GPU/CPU is best for mining?",
+    question: "What are the hardware requirements for validators?",
     answer:
-      "GPUs generally perform better than CPUs. Top choices: RTX 4090, RTX 4080, RX 7900 XTX. For CPU mining: AMD Ryzen 9 7950X. Ensure adequate cooling and power supply.",
+      "Recommended: 8+ CPU cores, 16GB+ RAM, 1TB SSD, 100+ Mbps internet. Ensure adequate cooling and power supply. Consider redundant nodes for high availability.",
     category: "Hardware",
   },
   {
     question: "How do I reduce power consumption?",
     answer:
-      "Lower GPU clock by 100-200MHz, reduce memory clock by 50-100MHz, enable power saving modes, adjust intensity settings downward, use efficient PSU (80+ Gold or better).",
+      "Use efficient server hardware, enable power saving modes where appropriate, optimize cooling systems, use efficient PSU (80+ Gold or better). Consider cloud hosting for optimal efficiency.",
     category: "Hardware",
   },
   {
-    question: "What's the minimum pool payout?",
+    question: "What's the minimum staking requirement?",
     answer:
-      "Varies by pool but typically 0.5-1 BDAG. Check your pool dashboard for exact minimum. Payouts are automatic when you exceed the threshold.",
+      "Avalanche requires a minimum of 2000 AVAX to become a validator. Delegators can stake smaller amounts by delegating to existing validators. Check current requirements on the Avalanche documentation.",
     category: "Rewards",
   },
 ];
@@ -70,7 +70,7 @@ export default function AISupport() {
               <h1 className="text-4xl font-bold">Frequently Asked Questions</h1>
             </div>
             <p className="text-lg text-muted-foreground">
-              Find answers to common questions about mining, optimization, and DAGPulse features.
+              Find answers to common questions about Avalanche validation, staking optimization, and DAGPulse features.
             </p>
           </div>
 
@@ -99,7 +99,7 @@ export default function AISupport() {
             <div>
               <h3 className="text-lg font-semibold mb-2">Need More Help?</h3>
               <p className="text-muted-foreground">
-                Can't find your answer? Check the specific pages for detailed information: Miners, Blocks, Forecast, Analytics, and Export sections contain comprehensive data and tools for your mining operation.
+                Can't find your answer? Check the specific pages for detailed information: Validators, Blocks, Forecast, Analytics, and Export sections contain comprehensive data and tools for your validation operation.
               </p>
             </div>
           </Card>

@@ -18,14 +18,14 @@ export function RiskIndicator({ miner }: RiskIndicatorProps) {
     if (lastActiveHours > 24) score += 40;
     else if (lastActiveHours > 12) score += 20;
 
-    // Worker downtime check
-    const offlineWorkers = miner.workers.filter((w) => w.status === "offline").length;
-    if (offlineWorkers > miner.workers.length * 0.5) score += 30;
-    else if (offlineWorkers > 0) score += 15;
+    // Node downtime check
+    const offlineNodes = miner.workers.filter((w) => w.status === "offline").length;
+    if (offlineNodes > miner.workers.length * 0.5) score += 30;
+    else if (offlineNodes > 0) score += 15;
 
-    // Hashrate stability check
-    if (miner.hashrateHistory.length > 1) {
-      const rates = miner.hashrateHistory.map((h) => h.hashrate);
+    // Staking power stability check
+    if (miner.stakingPowerHistory && miner.stakingPowerHistory.length > 1) {
+      const rates = miner.stakingPowerHistory.map((h) => h.hashrate);
       const avg = rates.reduce((a, b) => a + b) / rates.length;
       const variance = Math.sqrt(rates.reduce((a, h) => a + Math.pow(h - avg, 2)) / rates.length) / avg;
 
@@ -43,7 +43,7 @@ export function RiskIndicator({ miner }: RiskIndicatorProps) {
         ? "Multiple risk factors detected"
         : level === "medium"
           ? "Some performance issues"
-          : "Mining normally";
+          : "Validating normally";
 
     return { level, score: Math.min(100, score), reason };
   };

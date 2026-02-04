@@ -22,25 +22,23 @@ export function MinerCard({ miner, onClick }: MinerCardProps) {
       navigator.clipboard.writeText(miner.address);
       toast({
         title: "Address Copied",
-        description: "Miner address copied to clipboard",
+        description: "Validator address copied to clipboard",
       });
     }
   };
 
-  const formatHashrate = (hashrate?: number) => {
-    if (!hashrate) return "0 H/s";
-    if (hashrate >= 1e12) return `${(hashrate / 1e12).toFixed(2)} TH/s`;
-    if (hashrate >= 1e9) return `${(hashrate / 1e9).toFixed(2)} GH/s`;
-    if (hashrate >= 1e6) return `${(hashrate / 1e6).toFixed(2)} MH/s`;
-    if (hashrate >= 1e3) return `${(hashrate / 1e3).toFixed(2)} KH/s`;
-    return `${hashrate.toFixed(2)} H/s`;
+  const formatStakingPower = (power?: number) => {
+    if (!power) return "0 AVAX";
+    if (power >= 1e6) return `${(power / 1e6).toFixed(2)} M AVAX`;
+    if (power >= 1e3) return `${(power / 1e3).toFixed(2)} K AVAX`;
+    return `${power.toFixed(2)} AVAX`;
   };
 
   return (
     <Card
       className="group cursor-pointer overflow-hidden p-6 transition-all hover:scale-105"
       onClick={onClick}
-      data-testid={`card-miner-${miner.address}`}
+      data-testid={`card-validator-${miner.address}`}
     >
       <div className="space-y-4">
         <div className="flex items-start justify-between gap-2">
@@ -52,7 +50,7 @@ export function MinerCard({ miner, onClick }: MinerCardProps) {
               <p className="font-mono text-sm font-medium text-foreground">
                 {miner.address ? truncateAddress(miner.address) : "Unknown"}
               </p>
-              <p className="text-xs text-muted-foreground">Miner Address</p>
+              <p className="text-xs text-muted-foreground">Validator Address</p>
             </div>
           </div>
           <button
@@ -66,7 +64,7 @@ export function MinerCard({ miner, onClick }: MinerCardProps) {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className="text-xs text-muted-foreground">Total Blocks</p>
+            <p className="text-xs text-muted-foreground">Blocks Validated</p>
             <p className="font-['Space_Grotesk'] text-lg font-bold text-foreground" data-testid="text-total-blocks">
               {miner.totalBlocks?.toLocaleString() ?? "0"}
             </p>
@@ -74,13 +72,13 @@ export function MinerCard({ miner, onClick }: MinerCardProps) {
           <div>
             <p className="text-xs text-muted-foreground">Total Rewards</p>
             <p className="font-['Space_Grotesk'] text-lg font-bold text-foreground" data-testid="text-total-rewards">
-              {miner.totalRewards?.toLocaleString() ?? "0"} BDAG
+              {miner.totalRewards?.toLocaleString() ?? "0"} AVAX
             </p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Hashrate</p>
-            <p className="font-['Space_Grotesk'] text-lg font-bold text-foreground" data-testid="text-hashrate">
-              {formatHashrate(miner.currentHashrate)}
+            <p className="text-xs text-muted-foreground">Staking Power</p>
+            <p className="font-['Space_Grotesk'] text-lg font-bold text-foreground" data-testid="text-staking-power">
+              {formatStakingPower(miner.currentStakingPower)}
             </p>
           </div>
           <div>
@@ -96,7 +94,7 @@ export function MinerCard({ miner, onClick }: MinerCardProps) {
 
         <div className="flex items-center justify-between pt-2 border-t border-border/50">
           <Badge variant="secondary" className="text-xs">
-            {miner.workers?.length ?? 0} Workers
+            {miner.workers?.length ?? 0} Nodes
           </Badge>
           <span className="text-xs text-muted-foreground">
             View Details →
